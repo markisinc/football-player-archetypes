@@ -10,7 +10,8 @@ Thumbs.db
 # --- Downloaded data & intermediate files (rebuilt by the pipeline) ----------
 /data/
 /work/
-outputs/profiling_sb/profiles.json      # published copy lives in docs/
+# the published copy of profiles.json lives in docs/
+outputs/profiling_sb/profiles.json
 outputs/profiling_sb/dashboard/
 
 # --- Earlier 2012/13 work: kept on this machine, not published ---------------

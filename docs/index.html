@@ -48,6 +48,9 @@ html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); fon
 @media (prefers-reduced-motion: no-preference) { .dash-skeleton::after { animation: pulse 1.4s ease-in-out infinite; } @keyframes pulse { 50% { opacity: .45; } } }
 .site-foot { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--color-border-line); display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--color-fg-muted); }
 .site-foot a { color: inherit; }
+.site-foot { align-items: center; }
+.site-foot .sb-logo { display: inline-flex; }
+.site-foot .sb-logo img { height: 20px; width: auto; display: block; }
 </style>
 <script>
 /* Minimal stand-in for the dashboard runtime: loads CSVs from data/, keeps filter state, redraws on change and resize. */
@@ -586,6 +589,7 @@ window.dash = (() => {
 </script>
 
 <footer class="site-foot">
+  <a class="sb-logo" href="https://github.com/statsbomb/open-data" target="_blank" rel="noopener"><img src="images/statsbomb-logo.png" alt="StatsBomb" height="20"></a>
   <span>Data: <a href="https://github.com/statsbomb/open-data" target="_blank" rel="noopener">StatsBomb Open Data</a> 2015/16</span>
   <span><a id="repo-link" href="https://github.com/markisinc/football-player-archetypes" target="_blank" rel="noopener">Code &amp; methodology on GitHub</a></span>
   <span>Built by John Akinyemi</span>

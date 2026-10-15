@@ -1,5 +1,7 @@
 # Football Style Explorer
 
+[![tests](https://github.com/markisinc/football-player-archetypes/actions/workflows/tests.yml/badge.svg)](https://github.com/markisinc/football-player-archetypes/actions/workflows/tests.yml)
+
 **Which players play like whom?** A data-driven scouting tool that profiles 1,267 outfield players from Europe's top leagues, groups them into 21 playing-style archetypes, and finds each player's closest stylistic matches, with an honest measure of how much to trust every match.
 
 **[▶ Open the live explorer](https://markisinc.github.io/football-player-archetypes/)** · [Methodology](docs/METHODOLOGY.md)
@@ -88,7 +90,8 @@ cd docs && python -m http.server 8000     # → http://127.0.0.1:8000
 
 ## Data & credits
 
+<a href="https://github.com/statsbomb/open-data"><img src="docs/images/statsbomb-logo.png" alt="StatsBomb" width="200"></a>
+
 Data provided by **StatsBomb**: [StatsBomb Open Data](https://github.com/statsbomb/open-data).
-<!-- Add the StatsBomb logo from their Media Pack here, as their terms request. -->
 
 Built by John Akinyemi · [LinkedIn](https://www.linkedin.com/in/johnoakinyemi) · MIT licence (code only).
