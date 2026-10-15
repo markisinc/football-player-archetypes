@@ -1,0 +1,36 @@
+# --- Python / caches ---------------------------------------------------------
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+.DS_Store
+Thumbs.db
+
+# --- Downloaded data & intermediate files (rebuilt by the pipeline) ----------
+data/
+work/
+outputs/profiling_sb/profiles.json      # published copy lives in docs/
+outputs/profiling_sb/dashboard/
+
+# --- Earlier 2012/13 work: kept on this machine, not published ---------------
+# (built on an Opta export that is not ours to redistribute)
+matchData.*
+src/prep.py
+src/xg.py
+src/winprob.py
+src/export.py
+src/run_all.py
+src/profiling.py
+src/serve_profiles.py
+tests/test_profiling.py
+outputs/*.csv
+outputs/profiling/
+player-explorer/
+explorer/
+PLAYER_PROFILING.md
+PROJECT_GUIDE.md
+SB_PROFILING.md
+README_2012-13.md
+requirements-profiling.txt
+requirements-sb.txt
