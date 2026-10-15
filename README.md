@@ -4,17 +4,17 @@
 
 **[▶ Open the live explorer](https://markisinc.github.io/football-player-archetypes/)** · [Methodology](docs/METHODOLOGY.md)
 
-![Similar-player search: N'Golo Kanté's closest styles, with match score, stability and a radar comparison](docs/images/similar-players.png)
+![Similar-player search: N'Golo Kanté compared with his closest match, with radar, action-zone pitches and what is alike or different](docs/images/similar-players.png)
 
 ## What it does
 
 - **Similar-player search.** Pick a player and get the 10 most similar styles. Each match shows a score, a "holds up" percentage (how often it survives when the season is resampled), a radar comparison, and a plain-language note on what is alike and what differs. You can filter by league, exclude the player's own team, or stay within a position group.
 - **Archetypes.** 21 styles found *within* five position groups, such as *Ball-playing centre-back*, *Deep controller*, *Dribbling winger* and *Mobile front-line finisher*. Each player is marked as a core or borderline member.
-- **Style map.** Every player on the two main style dimensions. Click a dot to explore that player.
+- **Style map.** Every player on the two main style dimensions, with the selected archetype highlighted. Click a dot to explore that player.
 
-| Archetypes | Style map |
+| Archetypes and style map | Player profile and closest matches |
 |---|---|
-| ![Midfielder archetypes with their defining traits](docs/images/archetypes.png) | ![Style map of all players](docs/images/style-map.png) |
+| ![Midfielder archetypes: the Deep controller profile and where its members sit on the style map](docs/images/archetypes.png) | ![N'Golo Kanté's profile and his 10 most similar styles, with match and holds-up scores](docs/images/similar-table.png) |
 
 ## Key results
 

@@ -1,586 +1,575 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
-<title>Player Style Explorer</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Football Style Explorer</title>
+<meta name="description" content="Find players with similar styles and explore 21 playing archetypes from StatsBomb 2015/16 event data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Source+Sans+3:wght@400;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <style>
-/* Layout: scouting workbench — sticky header with tabs, two-column panels that stack on phones. Pitch-line motifs. */
+/* Design tokens: the same names the dashboard version uses, defined here for the standalone site. */
 :root {
-  --bg: #f4f5f1; --panel: #ffffff; --panel-2: #eef0ea; --line: #d9dcd2; --line-strong: #b9bdb0;
-  --fg: #16181a; --fg-2: #4d5148; --fg-3: #7a7e74;
-  --accent: #1f5c3d; --accent-soft: #dcebe1; --accent-fg: #ffffff;
-  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --muted-dot: #c4c7bd;
-  --seq-0: #eef3fb; --seq-1: #cde2fb; --seq-2: #86b6ef; --seq-3: #3987e5; --seq-4: #1c5cab; --seq-5: #0d366b;
-  --ok: #1f7a46; --warn: #a86400; --bad: #b3261e;
-  --pitch: #e7efe6; --pitch-line: #b7c9b5;
-  --display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
-  --body: "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --radius: 10px;
+  color-scheme: light;
+  --font-anthropic-sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-anthropic-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --cds-font-size-caption: 13px; --cds-font-size-body: 15px; --cds-font-size-heading: 18px; --cds-font-size-title: 30px;
+  --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 14px; --cds-gap-lg: 22px; --cds-gap-xl: 32px;
+  --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px;
+  --cds-radius: 10px; --cds-dur-slow: .3s;
+  --color-bg: #f6f6f3; --color-panel: #ffffff; --color-fg: #1b1c1a; --color-fg-muted: #5f625b; --color-border-line: #e0e0da;
+  --color-ok: #1f7a46; --color-warn: #a35f00; --color-bad: #b3261e;
+  --cds-chart-grid: #e7e7e1; --cds-chart-axis: #b9bab2; --cds-chart-reference: #8e9088; --cds-chart-muted: #c9cac2; --cds-chart-status-critical: #c6362c;
+  --cds-surface-popover: #ffffff; --cds-border: #dcdcd5; --cds-shadow-popover: 0 8px 24px rgba(0,0,0,.12); --cds-text-secondary: #5f625b;
+  --series-1: #2a78d6; --series-2: #eb6834;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #121412; --panel: #1b1e1b; --panel-2: #232723; --line: #303530; --line-strong: #454b44;
-  --fg: #eef0ea; --fg-2: #c0c4b9; --fg-3: #8d9287;
-  --accent: #7fc79b; --accent-soft: #23382b; --accent-fg: #0f1a13;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --muted-dot: #3d433d;
-  --seq-0: #1d2430; --seq-1: #184f95; --seq-2: #256abf; --seq-3: #3987e5; --seq-4: #6da7ec; --seq-5: #b7d3f6;
-  --ok: #6fcf94; --warn: #e3a440; --bad: #ef7f77;
-  --pitch: #1e2a20; --pitch-line: #36503b; color-scheme: dark; } }
+  color-scheme: dark;
+  --color-bg: #141513; --color-panel: #1c1d1b; --color-fg: #eeeeea; --color-fg-muted: #a7a99f; --color-border-line: #33352f;
+  --color-ok: #6fcf94; --color-warn: #e3a440; --color-bad: #ef7f77;
+  --cds-chart-grid: #2c2e29; --cds-chart-axis: #4a4c45; --cds-chart-reference: #7b7e74; --cds-chart-muted: #4a4d46; --cds-chart-status-critical: #e66767;
+  --cds-surface-popover: #232521; --cds-border: #3a3c36; --cds-shadow-popover: 0 8px 24px rgba(0,0,0,.45); --cds-text-secondary: #a7a99f;
+  --series-1: #3987e5; --series-2: #d95926; } }
 :root[data-theme="dark"] {
-  --bg: #121412; --panel: #1b1e1b; --panel-2: #232723; --line: #303530; --line-strong: #454b44;
-  --fg: #eef0ea; --fg-2: #c0c4b9; --fg-3: #8d9287;
-  --accent: #7fc79b; --accent-soft: #23382b; --accent-fg: #0f1a13;
-  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --muted-dot: #3d433d;
-  --seq-0: #1d2430; --seq-1: #184f95; --seq-2: #256abf; --seq-3: #3987e5; --seq-4: #6da7ec; --seq-5: #b7d3f6;
-  --ok: #6fcf94; --warn: #e3a440; --bad: #ef7f77;
-  --pitch: #1e2a20; --pitch-line: #36503b; color-scheme: dark; }
-body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; }
-* { box-sizing: border-box; }
-.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
-header.top .wrap { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 24px; padding-block: 14px 0; }
-.brand { display: flex; flex-direction: column; gap: 2px; padding-bottom: 10px; min-width: 0; }
-.brand h1 { font-family: var(--display); font-weight: 700; font-size: 28px; letter-spacing: .01em; margin: 0; line-height: 1; text-transform: uppercase; }
-.brand p { margin: 0; color: var(--fg-3); font-size: 13px; }
-nav.tabs { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; max-width: 100%; scrollbar-width: none; }
-nav.tabs::-webkit-scrollbar { display: none; }
-nav.tabs button { font: 600 15px var(--display); text-transform: uppercase; letter-spacing: .06em; background: none; border: 0; color: var(--fg-3); padding: 10px 12px; border-bottom: 3px solid transparent; cursor: pointer; white-space: nowrap; }
-nav.tabs button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
-nav.tabs button:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-main { padding-block: 20px 48px; }
-section[hidden] { display: none !important; }
-.grid2 { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 16px; align-items: start; }
-@media (max-width: 860px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; min-width: 0; }
-.panel h2, .panel h3 { font-family: var(--display); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 4px; }
-.panel h2 { font-size: 22px; } .panel h3 { font-size: 17px; }
-.eyebrow { font: 600 12px var(--display); letter-spacing: .1em; text-transform: uppercase; color: var(--fg-3); }
-.muted { color: var(--fg-3); font-size: 13px; }
-.stack { display: flex; flex-direction: column; gap: 14px; }
-.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.search { position: relative; }
-.search input { width: 100%; font: 500 16px var(--body); padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--panel); color: var(--fg); }
-.suggest { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--panel); border: 1px solid var(--line-strong); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); max-height: 320px; overflow: auto; z-index: 4; }
-.suggest button { display: flex; width: 100%; justify-content: space-between; gap: 8px; text-align: left; background: none; border: 0; padding: 8px 12px; font: inherit; color: var(--fg); cursor: pointer; }
-.suggest button:hover, .suggest button.active { background: var(--panel-2); }
-.suggest small { color: var(--fg-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chip { font: 500 13px var(--body); border: 1px solid var(--line-strong); background: var(--panel); color: var(--fg-2); border-radius: 999px; padding: 4px 11px; cursor: pointer; }
-.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
-.player-name { font-family: var(--display); font-size: 30px; font-weight: 700; line-height: 1.05; margin: 2px 0 6px; }
-.facts { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
-.facts dt { color: var(--fg-3); } .facts dd { margin: 0; font-variant-numeric: tabular-nums; min-width: 0; }
-.badge { display: inline-flex; align-items: center; gap: 5px; font: 600 12px var(--body); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
-.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
-.b-core { color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
-.b-mid { color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, transparent); }
-.b-edge { color: var(--fg-3); background: var(--panel-2); }
-.role-pill { display: inline-block; font: 600 13px var(--body); background: var(--accent-soft); color: var(--fg); border-radius: 6px; padding: 3px 8px; }
-table.nb { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
-table.nb th { text-align: left; font: 600 12px var(--display); text-transform: uppercase; letter-spacing: .08em; color: var(--fg-3); padding: 6px 8px; border-bottom: 1px solid var(--line); }
-table.nb td { padding: 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-table.nb tr { cursor: pointer; }
-table.nb tbody tr:hover { background: var(--panel-2); }
-table.nb tr.sel { background: var(--accent-soft); }
-.tbl-wrap { overflow-x: auto; }
-.nm { font-weight: 600; } .sub { color: var(--fg-3); font-size: 12.5px; }
-.simbar { display: inline-block; width: 56px; height: 6px; border-radius: 3px; background: var(--panel-2); vertical-align: middle; margin-right: 6px; overflow: hidden; }
-.simbar i { display: block; height: 100%; background: var(--s1); border-radius: 3px; }
-.hide-sm { } @media (max-width: 620px) { .hide-sm { display: none; } }
-.compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
-@media (max-width: 760px) { .compare { grid-template-columns: minmax(0, 1fr); } }
-.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--fg-2); }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
-.why { display: grid; gap: 8px; font-size: 14px; }
-.why b { font-weight: 600; }
-.why ul { margin: 2px 0 0; padding-left: 18px; }
-.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 14px; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; text-align: left; font: inherit; color: inherit; }
-.card:hover { border-color: var(--line-strong); }
-.card[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
-.card h3 { font: 700 20px var(--display); text-transform: uppercase; letter-spacing: .02em; margin: 0; line-height: 1.05; }
-.pbar { display: grid; grid-template-columns: minmax(0, 1fr) 90px 30px; gap: 8px; align-items: center; font-size: 13px; }
-.pbar .track { height: 6px; border-radius: 3px; background: var(--panel-2); position: relative; }
-.pbar .track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--s1); }
-.pbar .track::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--line-strong); }
-.pbar .v { text-align: right; color: var(--fg-3); font-variant-numeric: tabular-nums; }
-.members { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 6px 16px; }
-.member { display: flex; justify-content: space-between; gap: 8px; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 7px 2px; font: inherit; color: var(--fg); cursor: pointer; text-align: left; min-width: 0; }
-.member:hover { color: var(--accent); }
-.member span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chart { position: relative; }
-.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
-.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line-strong); border-radius: 8px; padding: 6px 9px; font-size: 12.5px; box-shadow: 0 6px 18px rgba(0,0,0,.14); white-space: nowrap; z-index: 3; }
-.tip b { display: block; font-weight: 600; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 12px; }
-.stat { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
-.stat .n { font: 700 30px var(--display); font-variant-numeric: tabular-nums; line-height: 1.05; }
-.stat .l { font-size: 13px; color: var(--fg-2); }
-.prose { max-width: 70ch; display: grid; gap: 10px; }
-.prose p { margin: 0; }
-.loading { padding: 60px 0; text-align: center; color: var(--fg-3); }
-.err { color: var(--bad); }
-.kbd { font-size: 12px; color: var(--fg-3); }
-@media (prefers-reduced-motion: no-preference) { .card, .chip, .member { transition: border-color .15s, background .15s, color .15s; } }
+  color-scheme: dark;
+  --color-bg: #141513; --color-panel: #1c1d1b; --color-fg: #eeeeea; --color-fg-muted: #a7a99f; --color-border-line: #33352f;
+  --color-ok: #6fcf94; --color-warn: #e3a440; --color-bad: #ef7f77;
+  --cds-chart-grid: #2c2e29; --cds-chart-axis: #4a4c45; --cds-chart-reference: #7b7e74; --cds-chart-muted: #4a4d46; --cds-chart-status-critical: #e66767;
+  --cds-surface-popover: #232521; --cds-border: #3a3c36; --cds-shadow-popover: 0 8px 24px rgba(0,0,0,.45); --cds-text-secondary: #a7a99f;
+  --series-1: #3987e5; --series-2: #d95926; }
+html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); }
+.site { max-width: 1240px; margin: 0 auto; padding-block: 28px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); box-sizing: border-box; }
+.site *, .site *::before, .site *::after { box-sizing: border-box; }
+.dash-skeleton { position: relative; min-height: 1.2em; }
+.dash-skeleton::after { content: ""; position: absolute; inset: 0; border-radius: 6px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); }
+@media (prefers-reduced-motion: no-preference) { .dash-skeleton::after { animation: pulse 1.4s ease-in-out infinite; } @keyframes pulse { 50% { opacity: .45; } } }
+.site-foot { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--color-border-line); display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--color-fg-muted); }
+.site-foot a { color: inherit; }
+</style>
+<script>
+/* Minimal stand-in for the dashboard runtime: loads CSVs from data/, keeps filter state, redraws on change and resize. */
+window.dash = (() => {
+  const FILES = { sb_players: 'data/sb_players.csv', sb_neighbours: 'data/sb_neighbours.csv', sb_archetypes: 'data/sb_archetypes.csv',
+    sb_archetype_profiles: 'data/sb_archetype_profiles.csv', sb_features: 'data/sb_features.csv', sb_summary: 'data/sb_summary.csv' };
+  const store = {}, subs = [];
+  let params = { player: 3961, sb_league: 'any', sb_exteam: true, sb_samegroup: false, ar_group: null, ar_arch: null };
+  const notify = () => subs.forEach((f) => { try { f(); } catch (e) { console.error(e); } });
+  function load(id) {
+    if (store[id]) return;
+    store[id] = { status: 'loading', data: [] };
+    d3.csv(FILES[id]).then((rows) => { store[id] = { status: 'ok', data: rows }; notify(); })
+      .catch((e) => { store[id] = { status: 'error', data: [], message: String(e) }; notify(); });
+  }
+  let t; window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(notify, 150); });
+  return {
+    data(id) { if (!FILES[id]) return { status: 'missing', data: [] }; load(id); return store[id]; },
+    params: () => ({ ...params }),
+    setParams(o) { params = { ...params, ...o }; notify(); },
+    resetParams() {},
+    onData(fn) { subs.push(fn); fn(); },
+    colors: ['var(--series-1)', 'var(--series-2)'],
+    setLink(name) { try { history.replaceState(null, '', '#' + name); } catch (e) {} },
+  };
+})();
+</script>
+</head>
+<body>
+<div class="site">
+<style>
+.ep { display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+.ep [hidden] { display: none !important; }
+.ep h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.ep h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.ep h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.ep p { margin: 0; line-height: 1.5; }
+.ep .muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.ep .lead { font-size: var(--cds-font-size-heading); line-height: 1.45; color: var(--color-fg-muted); max-width: none; }
+.ep .lead b, .ep .why b.v, .ep .facts b { font-weight: 600; color: var(--color-fg); }
+.ep .tabs { display: flex; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); overflow-x: auto; scrollbar-width: none; }
+.ep .tabs::-webkit-scrollbar { display: none; }
+.ep .tab { font: inherit; font-size: var(--cds-font-size-heading); background: none; border: 0; border-bottom: 2px solid transparent; color: var(--color-fg-muted); padding: var(--cds-pad-sm) var(--cds-pad-md); cursor: pointer; white-space: nowrap; }
+.ep .tab[aria-selected=true] { color: var(--color-fg); border-bottom-color: var(--color-fg); }
+.ep .tab:focus-visible, .ep button:focus-visible, .ep input:focus-visible { outline: 2px solid var(--color-fg-muted); outline-offset: 2px; }
+.ep section.page { display: flex; flex-direction: column; gap: var(--cds-gap-lg); }
+.ep .row2 { display: grid; grid-template-columns: minmax(0, 22rem) minmax(0, 1fr); gap: var(--cds-gap-md); align-items: stretch; }
+@media (max-width: 900px) { .ep .row2 { grid-template-columns: minmax(0, 1fr); } }
+.ep .card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+.ep .controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: center; }
+.ep input[type=search] { font: inherit; font-size: var(--cds-font-size-heading); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); width: 100%; }
+.ep .chips { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+.ep .chips .label { color: var(--color-fg-muted); font-size: var(--cds-font-size-body); margin-right: 2px; }
+.ep .chip { font: inherit; font-size: var(--cds-font-size-body); background: transparent; color: var(--color-fg); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 6px 16px; cursor: pointer; }
+.ep .chip:hover { border-color: var(--color-fg-muted); }
+.ep .chip[aria-pressed=true] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.ep .chip.back { border-style: dashed; color: var(--color-fg-muted); }
+.ep .sep { width: 1px; align-self: stretch; background: var(--color-border-line); margin: 0 4px; }
+.ep .chart { position: relative; min-height: 160px; }
+.ep .chart svg { display: block; overflow: visible; }
+.ep .tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
+.ep .tip .t { color: var(--cds-text-secondary); margin-bottom: 2px; }
+.ep .tip .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+.ep .legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+.ep .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: var(--lr, 2px); margin-right: 6px; vertical-align: 0; background: var(--sw); }
+.ep .tbl-wrap { overflow: auto; }
+.ep .tbl-wrap.tall { max-height: 28rem; }
+.ep table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+.ep th, .ep td { text-align: right; padding: 8px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.ep th:first-child, .ep td:first-child, .ep td.txt, .ep th.txt { text-align: left; }
+.ep th { position: sticky; top: 0; background: var(--color-panel); font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); z-index: 1; }
+.ep tr.pick { cursor: pointer; }
+.ep tr.pick:hover td { background: color-mix(in srgb, var(--color-fg) 5%, transparent); }
+.ep tr.sel td { background: color-mix(in srgb, var(--color-fg) 9%, transparent); }
+.ep td.wrap { white-space: normal; min-width: 9rem; }
+.ep .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.ep .fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; height: 100%; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.ep .fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+.ep [data-dash-source-state=empty] { color: transparent; }
+.ep [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+@media (max-width: 620px) { .ep .hide-narrow { display: none; } }
+.ep .search { position: relative; }
+.ep .suggest { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); max-height: 320px; overflow: auto; z-index: 5; }
+.ep .suggest button { display: flex; width: 100%; justify-content: space-between; gap: 8px; text-align: left; background: none; border: 0; padding: 8px 12px; font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); cursor: pointer; }
+.ep .suggest button:hover, .ep .suggest button.active { background: color-mix(in srgb, var(--color-fg) 7%, transparent); }
+.ep .suggest small { color: var(--color-fg-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ep .pname { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1.1; }
+.ep .pill { align-self: flex-start; font-size: var(--cds-font-size-body); font-weight: 600; border-radius: 6px; padding: 3px 10px; background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
+.ep .facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: var(--cds-font-size-body); margin: 4px 0 0; }
+.ep .facts dt { color: var(--color-fg-muted); } .ep .facts dd { margin: 0; font-variant-numeric: tabular-nums; min-width: 0; }
+/* comparison: radar | two pitches | explanation */
+.ep .cmp-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr) minmax(0, 1fr); gap: var(--cds-gap-lg); align-items: start; }
+@media (max-width: 1000px) { .ep .cmp-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .ep .cmp-grid .why { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .ep .cmp-grid { grid-template-columns: minmax(0, 1fr); } }
+.ep .pitches { display: grid; gap: var(--cds-gap-sm); }
+.ep .pitch-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); display: flex; align-items: center; gap: 6px; }
+.ep .pitches .chart { min-height: 0; }
+.ep .why { display: grid; gap: var(--cds-gap-md); font-size: var(--cds-font-size-body); align-content: start; }
+.ep .why ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+/* archetypes */
+.ep .pbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(5rem, 40%) 2rem; gap: 10px; align-items: center; font-size: var(--cds-font-size-body); }
+.ep .pbar .track { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--color-fg) 8%, transparent); position: relative; }
+.ep .pbar .track i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; }
+.ep .pbar .track::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--color-fg-muted); opacity: .5; }
+.ep .pbar .v { text-align: right; color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+.ep .aname { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1.1; }
+.ep .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); }
+.ep .stat { display: flex; flex-direction: column; gap: 2px; }
+.ep .stat .n { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+.ep .credit { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
 </style>
 
-<header class="top">
-  <div class="wrap">
-    <div class="brand">
-      <h1>Player Style Explorer</h1>
-      <p id="subtitle">StatsBomb Open Data 2015/16 · Premier League, La Liga, Serie A, Ligue 1</p>
-    </div>
-    <nav class="tabs" role="tablist" aria-label="Views">
-      <button role="tab" id="tab-similar" aria-selected="true" aria-controls="similar">Similar players</button>
-      <button role="tab" id="tab-archetypes" aria-selected="false" aria-controls="archetypes">Archetypes</button>
-      <button role="tab" id="tab-map" aria-selected="false" aria-controls="map">Style map</button>
-      <button role="tab" id="tab-method" aria-selected="false" aria-controls="method">Method</button>
-    </nav>
+<div class="ep">
+  <header style="display:flex;flex-direction:column;gap:var(--cds-gap-xs)">
+    <h1 id="title">Football Style Explorer</h1>
+    <p class="muted">StatsBomb Open Data 2015/16 · Premier League, La Liga, Serie A, Ligue 1</p>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" role="tab" id="tab-styles" data-page="styles" aria-selected="true">Player styles</button>
+    <button class="tab" role="tab" id="tab-archetypes" data-page="archetypes" aria-selected="false">Archetypes</button>
+  </nav>
+  <div id="pages"></div>
+</div>
+
+<!-- ======================= PLAYER STYLES ======================= -->
+<template id="tpl-styles">
+<section class="page" id="styles">
+  <p class="lead" id="styles-lead">Pick any of <b data-source="sb_summary" data-field="value" data-where="metric=eligible_players">—</b> outfield players (<b data-source="sb_summary" data-field="value" data-where="metric=min_minutes">—</b>+ minutes) to find who recorded the most similar style. Similarity uses what players did, from passing and carrying to defending and shooting, not how well they did it.</p>
+  <div class="search">
+    <input id="sb-q" type="search" autocomplete="off" placeholder="Search a player or team, e.g. Kanté, Özil, Juventus" aria-label="Search player">
+    <div class="suggest" id="sb-suggest" role="listbox" hidden></div>
   </div>
-</header>
+  <div class="chips" role="group" aria-label="Neighbour filters" id="sb-filters">
+    <span class="label">League</span>
+    <button class="chip" data-league="any" aria-pressed="true">Any</button>
+    <button class="chip" data-league="same" aria-pressed="false">Same league</button>
+    <button class="chip" data-league="other" aria-pressed="false">Other leagues</button>
+    <span class="sep"></span>
+    <button class="chip" id="sb-exteam" aria-pressed="true">Exclude own team</button>
+    <button class="chip" id="sb-samegroup" aria-pressed="false">Same position group</button>
+  </div>
 
-<main class="wrap">
-  <div id="loading" class="loading">Loading 1,200+ player profiles…</div>
-
-  <!-- SIMILAR -->
-  <section id="similar" role="tabpanel" aria-labelledby="tab-similar" hidden>
-    <div class="grid2">
-      <div class="stack">
-        <div class="search">
-          <label class="eyebrow" for="q">Find a player</label>
-          <input id="q" type="search" autocomplete="off" placeholder="Name or team, e.g. Kanté" aria-autocomplete="list" aria-controls="suggest">
-          <div class="suggest" id="suggest" role="listbox" hidden></div>
-        </div>
-        <div class="panel" id="player-card"></div>
-        <div class="panel">
-          <h3>Where they act</h3>
-          <p class="muted" style="margin:0 0 8px">Share of on-ball actions by pitch zone. Attacking left to right.</p>
-          <div class="chart" id="heat"></div>
-        </div>
+  <div class="card" id="sb-cmp">
+    <div class="controls" style="justify-content:space-between"><h2 id="sb-cmp-title">Comparison</h2><div class="legend" id="sb-cmp-legend"></div></div>
+    <div class="cmp-grid">
+      <div class="chart" id="sb-radar" data-source="sb_players sb_features"></div>
+      <div class="pitches" id="sb-pitches" data-source="sb_players">
+        <p class="muted">Where they act: share of on-ball actions by zone, attacking left to right.</p>
+        <div><div class="pitch-label" id="sb-pa-label"></div><div class="chart" id="sb-pa"></div></div>
+        <div><div class="pitch-label" id="sb-pb-label"></div><div class="chart" id="sb-pb"></div></div>
       </div>
-      <div class="stack" style="min-width:0">
-        <div class="panel stack">
-          <div>
-            <h2>Most similar styles</h2>
-            <p class="muted" style="margin:0">Ranked by distance in style space. <b>Match</b>: 100 = identical profile, 0 = as different as two random players. <b>Holds up</b> = how often the player stays in the top 5 when the season's matches are resampled.</p>
-          </div>
-          <div class="row" role="group" aria-label="Filters">
-            <span class="eyebrow">League</span>
-            <button class="chip" data-league="any" aria-pressed="true">Any</button>
-            <button class="chip" data-league="same" aria-pressed="false">Same league</button>
-            <button class="chip" data-league="other" aria-pressed="false">Other leagues</button>
-            <span style="width:8px"></span>
-            <button class="chip" id="f-team" aria-pressed="true">Exclude own team</button>
-            <button class="chip" id="f-group" aria-pressed="false">Same position group</button>
-          </div>
-          <div class="tbl-wrap">
-            <table class="nb" id="nb">
-              <thead><tr><th>#</th><th>Player</th><th class="hide-sm">Archetype</th><th>Match</th><th>Holds up</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="panel stack" id="compare-panel">
-          <div class="row" style="justify-content:space-between">
-            <h2 id="cmp-title">Comparison</h2>
-            <div class="legend" id="cmp-legend"></div>
-          </div>
-          <div class="compare">
-            <div class="chart" id="radar"></div>
-            <div class="why" id="why"></div>
-          </div>
-        </div>
-      </div>
+      <div class="why" id="sb-why"></div>
     </div>
-  </section>
+  </div>
 
-  <!-- ARCHETYPES -->
-  <section id="archetypes" role="tabpanel" aria-labelledby="tab-archetypes" hidden>
-    <div class="stack">
-      <div class="prose">
-        <p><b>Archetypes are found within each position group.</b> Players are first grouped by where they mostly played (StatsBomb lineup positions), then clustered on style inside that group. Names were given after reading each group's defining features.</p>
-        <p class="muted">Bars show the archetype's average percentile within its position group; 50 is the group middle. <span class="badge b-core">Core</span> members kept this archetype in at least 80% of match resamples. <span class="badge b-edge">Borderline</span> members sit between archetypes.</p>
+  <div class="row2">
+    <div class="card" id="sb-card"></div>
+    <div class="card" id="sb-nb-card">
+      <h2>Most similar styles</h2>
+      <p class="muted"><b>Match %</b>: 100 = identical profile, 0 = as different as two random players. <b>Holds up %</b>: how often the player stays in the top 5 when the season's matches are resampled (green ≥ 60, amber 30–59, grey &lt; 30). Click a row to compare.</p>
+      <div class="tbl-wrap">
+        <table id="sb-nb" data-source="sb_neighbours" data-row-key="player_id,rank">
+          <thead><tr><th data-field="rank">#</th><th class="txt" data-field="neighbour">Player</th><th class="txt hide-narrow" data-field="neighbour_team">Team</th><th class="txt hide-narrow" data-field="neighbour_archetype">Archetype</th><th data-field="match_pct">Match %</th><th data-field="holds_up_pct">Holds up %</th></tr></thead>
+          <tbody></tbody>
+        </table>
       </div>
-      <div class="row" id="group-chips" role="group" aria-label="Position group"></div>
-      <div class="cards" id="role-cards"></div>
-      <div class="panel stack" id="role-detail"></div>
+      <p class="muted" id="sb-nb-note"></p>
     </div>
-  </section>
+  </div>
 
-  <!-- MAP -->
-  <section id="map" role="tabpanel" aria-labelledby="tab-map" hidden>
-    <div class="panel stack">
-      <div>
-        <h2>Style map</h2>
-        <p class="muted" style="margin:0">Every eligible player on the first two style dimensions (<span id="map-var">—</span> of the variation). Nearby dots play similarly, but the search uses all dimensions, so the map is a guide, not the ranking. Click a dot to open that player.</p>
-      </div>
-      <div class="row">
-        <label class="eyebrow" for="map-role">Highlight archetype</label>
-        <select id="map-role" class="chip" style="padding:5px 10px"></select>
-      </div>
-      <div class="legend" id="map-legend"></div>
-      <div class="chart" id="scatter"></div>
+  <div class="card" id="sb-trust">
+    <h2>How much to trust a match</h2>
+    <div class="stats">
+      <div class="stat"><span class="n"><span data-source="sb_summary" data-field="value" data-where="metric=top5_overlap_pct">—</span>%</span><span class="muted">of a player's top 5 survive a resample of the season's matches</span></div>
+      <div class="stat"><span class="n"><span data-source="sb_summary" data-field="value" data-where="metric=stable_link_pct">—</span>%</span><span class="muted">of top-5 links are stable (in the top 5 in 60%+ of resamples)</span></div>
+      <div class="stat"><span class="n"><span data-source="sb_summary" data-field="value" data-where="metric=same_league_pct">—</span>%</span><span class="muted">of top-5 matches share a league, vs <span data-source="sb_summary" data-field="value" data-where="metric=same_league_chance_pct">—</span>% by chance</span></div>
+      <div class="stat"><span class="n"><span data-source="sb_summary" data-field="value" data-where="metric=pca_variance_pct">—</span>%</span><span class="muted">of style variation kept in the search dimensions</span></div>
     </div>
-  </section>
+    <p class="muted">Rank alone overstates certainty: with about 30 matches per player-season, rates are noisy. Use Holds up % as the confidence for each suggestion. Similar means a similar recorded pattern of actions in 2015/16, not "could replace". Data: StatsBomb Open Data.</p>
+  </div>
+</section>
+</template>
 
-  <!-- METHOD -->
-  <section id="method" role="tabpanel" aria-labelledby="tab-method" hidden>
-    <div class="stack">
-      <div class="stats" id="method-stats"></div>
-      <div class="panel prose" id="method-text"></div>
+<!-- ======================= ARCHETYPES ======================= -->
+<template id="tpl-archetypes">
+<section class="page" id="archetypes">
+  <p class="lead"><b data-source="sb_summary" data-field="value" data-where="metric=archetypes">—</b> archetypes found inside five position groups: players are grouped by where they mostly played, then clustered on style. Styles blend, so archetypes are guides; <b data-source="sb_summary" data-field="value" data-where="metric=core_player_pct">—</b>% of players are core members of theirs.</p>
+  <div class="chips" id="ar-select" role="group" aria-label="Choose a position, then an archetype" data-source="sb_archetypes"></div>
+  <div class="row2">
+    <div class="card" id="ar-detail" data-source="sb_archetypes sb_archetype_profiles"></div>
+    <div class="card" id="ar-map-card">
+      <div class="controls" style="justify-content:space-between"><h2 id="ar-map-title">Style map</h2><div class="legend" id="ar-legend"></div></div>
+      <p class="muted">Every player on the first two style dimensions (<span data-source="sb_summary" data-field="value" data-where="metric=map_variance_pct">—</span>% of the variation). Click a dot to open that player in Player styles.</p>
+      <div class="chart" id="ar-map" data-source="sb_players"></div>
     </div>
-  </section>
-</main>
+  </div>
+  <div class="card" id="ar-members-card">
+    <h2 id="ar-members-title">Members</h2>
+    <p class="muted">Sorted by how often they kept this archetype across 30 match resamples (green ≥ 80 = core). Click a row to see similar styles.</p>
+    <div class="tbl-wrap tall">
+      <table id="ar-members" data-source="sb_players" data-row-key="id">
+        <thead><tr><th class="txt" data-field="name">Player</th><th class="txt" data-field="team">Team</th><th class="txt hide-narrow" data-field="league">League</th><th class="txt hide-narrow" data-field="position">Main position</th><th data-field="minutes">Minutes</th><th data-field="archetype_stability">Kept %</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <p class="credit">Archetype agreement across resamples (ARI, 1 = identical): centre-backs <span data-source="sb_summary" data-field="value" data-where="metric=ari_Centre-back">—</span>, full-backs <span data-source="sb_summary" data-field="value" data-where="metric=ari_Full-back">—</span>, midfielders <span data-source="sb_summary" data-field="value" data-where="metric=ari_Midfielder">—</span>, attacking mids/wingers <span data-source="sb_summary" data-field="value" data-where="metric=ari_Attacking mid / winger">—</span>, forwards <span data-source="sb_summary" data-field="value" data-where="metric=ari_Forward">—</span>. Data: StatsBomb Open Data.</p>
+</section>
+</template>
 
 <script>
 (() => {
-  const $ = (s, el = document) => el.querySelector(s);
-  const el = (tag, attrs = {}, ...kids) => {
-    const n = document.createElement(tag);
-    for (const [k, v] of Object.entries(attrs)) {
-      if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v;
-      else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
-    }
-    for (const k of kids) if (k != null) n.append(k);
-    return n;
-  };
-  const SVGNS = 'http://www.w3.org/2000/svg';
-  const sv = (tag, attrs = {}) => { const n = document.createElementNS(SVGNS, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); return n; };
-  const fmt0 = (v) => v == null ? '—' : Math.round(v).toLocaleString('en');
-  const fmt1 = (v) => v == null ? '—' : (Math.round(v * 10) / 10).toFixed(1);
-  const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
-
-  let D, byId, P, featLabel, roleById, groupOf;
-  const state = { player: null, cmp: null, league: 'any', exTeam: true, sameGroup: false, group: null, role: null, tab: 'similar' };
-
-  // ---------- tabs
-  const tabs = ['similar', 'archetypes', 'map', 'method'];
-  function showTab(t) {
-    state.tab = t;
-    tabs.forEach((x) => { $('#tab-' + x).setAttribute('aria-selected', String(x === t)); $('#' + x).hidden = x !== t; });
-    if (t === 'map') drawMap();
-    if (t === 'similar' && state.player) renderSimilar();
-    try { history.replaceState(null, '', '#' + t); } catch {}
+  const fmt2 = d3.format('.2f'), pct1 = d3.format('.1%'), comma = d3.format(',');
+  const num = (rows, ...ks) => rows.map((r) => { const o = { ...r }; ks.forEach((k) => { o[k] = r[k] === '' || r[k] == null ? null : Number(r[k]); }); return o; });
+  const $ = (id) => document.getElementById(id);
+  const mk = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+  const BAD = ['error', 'connect', 'declined', 'missing'];
+  function showFail(el) { el.replaceChildren(mk('div', 'fail', 'Failed to load')); }
+  function state(el, ...ids) {
+    const ds = ids.map((id) => dash.data(id));
+    if (ds.some((d) => BAD.includes(d.status))) { el.classList.remove('dash-skeleton'); showFail(el); return null; }
+    if (ds.some((d) => d.status !== 'ok')) { el.replaceChildren(); el.classList.add('dash-skeleton'); return null; }
+    el.classList.remove('dash-skeleton');
+    return ds.map((d) => d.data);
   }
-  tabs.forEach((t) => $('#tab-' + t).addEventListener('click', () => showTab(t)));
-
-  // ---------- load
-  fetch('profiles.json').then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(init).catch((e) => {
-    $('#loading').replaceChildren(el('p', { class: 'err', text: 'Could not load profiles.json (' + e.message + ').' }),
-      el('p', { class: 'muted', text: 'Open this page over HTTP from the folder that holds profiles.json, e.g. run "python -m http.server" there.' }));
-  });
-
-  function init(data) {
-    D = data; P = D.players; byId = new Map(P.map((p) => [p.id, p]));
-    featLabel = Object.fromEntries(D.features.map((f) => [f.key, f.label]));
-    roleById = new Map(D.subroles.map((s) => [s.id, s]));
-    $('#loading').hidden = true;
-    const s = D.summary;
-    $('#subtitle').textContent = `StatsBomb Open Data 2015/16 · ${s.eligible.toLocaleString('en')} outfield players, ${s.min_minutes}+ minutes · Premier League, La Liga, Serie A, Ligue 1`;
-    $('#map-var').textContent = Math.round(s.map_variance * 100) + '%';
-    buildSearch(); buildFilters(); buildArchetypes(); buildMapControls(); buildMethod();
-    const saved = Number(store.get('psx-player'));
-    const start = byId.get(saved) || P.find((p) => /Kanté/.test(p.name)) || P[0];
-    selectPlayer(start.id, false);
-    const hash = location.hash.slice(1);
-    showTab(tabs.includes(hash) ? hash : 'similar');
+  const ready = (...ids) => ids.every((id) => dash.data(id).status === 'ok');
+  function tipBox(host) { let t = host.querySelector(':scope > .tip'); if (!t) { t = mk('div', 'tip'); t.hidden = true; host.appendChild(t); } return t; }
+  function placeTip(tip, host, x, y) {
+    tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight, W = host.clientWidth;
+    let left = x + 12; if (left + w > W) left = x - w - 12; left = Math.max(0, left);
+    tip.style.left = left + 'px'; tip.style.top = Math.max(0, y - h - 8) + 'px';
   }
-
-  // ---------- helpers
-  const dist = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) { const d = a[i] - b[i]; s += d * d; } return Math.sqrt(s); };
-  const teamStr = (p) => p.teams.join(' / ');
-  function stabilityBadge(v) {
-    if (v == null) return el('span', { class: 'badge b-edge', title: 'Outside the 25 nearest, so not tracked in resamples', text: 'n/a' });
-    if (v >= 0.6) return el('span', { class: 'badge b-core', title: `In the top 5 in ${Math.round(v * 100)}% of resamples`, text: 'Stable' });
-    if (v >= 0.3) return el('span', { class: 'badge b-mid', title: `In the top 5 in ${Math.round(v * 100)}% of resamples`, text: 'Sometimes' });
-    return el('span', { class: 'badge b-edge', title: `In the top 5 in ${Math.round(v * 100)}% of resamples`, text: 'Rarely' });
+  function tipLine(tip, title, lines) {
+    tip.replaceChildren(mk('div', 't', title));
+    lines.forEach(([color, label, val]) => { const row = mk('div'); if (color) { const s = mk('span', 'sw'); s.style.background = color; row.appendChild(s); } row.appendChild(document.createTextNode(label + ' ' + val)); tip.appendChild(row); });
   }
-  function roleBadge(p) {
-    const v = p.subrole_stability;
-    if (v >= 0.8) return el('span', { class: 'badge b-core', title: `Same archetype in ${Math.round(v * 100)}% of resamples`, text: 'Core' });
-    if (v >= 0.5) return el('span', { class: 'badge b-mid', title: `Same archetype in ${Math.round(v * 100)}% of resamples`, text: 'Mostly' });
-    return el('span', { class: 'badge b-edge', title: `Same archetype in ${Math.round(v * 100)}% of resamples`, text: 'Borderline' });
+  const setText = (el, v) => { if (!el) return; el.classList.remove('dash-skeleton'); el.textContent = v; };
+  function fillSummary(root) {
+    const s = dash.data('sb_summary'); if (s.status !== 'ok') return;
+    const by = Object.fromEntries(s.data.map((r) => [r.metric, Number(r.value)]));
+    root.querySelectorAll('[data-source="sb_summary"]').forEach((el) => {
+      const m = decodeURIComponent(el.getAttribute('data-where').slice(7)); const v = by[m];
+      setText(el, v == null ? '—' : (m.startsWith('ari_') ? fmt2(v) : comma(v)));
+    });
   }
+  const swatch = (c, t, round) => { const s = mk('span', null, t); s.style.setProperty('--sw', c); if (round) s.style.setProperty('--lr', '50%'); return s; };
 
-  // ---------- search
-  function buildSearch() {
-    const q = $('#q'), box = $('#suggest');
+  // ================= router =================
+  const PAGES = ['styles', 'archetypes'];
+  const mounted = {}; let current = null;
+  function show(page, link = true) {
+    if (!PAGES.includes(page)) page = 'styles';
+    current = page;
+    document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', String(t.dataset.page === page)));
+    if (!mounted[page]) { $('pages').appendChild($('tpl-' + page).content.cloneNode(true)); mounted[page] = true; MOUNT[page](); }
+    PAGES.forEach((p) => { const s = $(p); if (s) s.hidden = p !== page; });
+    if (link) dash.setLink(page);
+    DRAW[page]();
+  }
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => show(t.dataset.page)));
+
+  // ================= data indexes =================
+  const P = { players: null, byId: null, nb: null, cmp: null };
+  function indexPlayers() {
+    if (P.players || !ready('sb_players')) return;
+    const raw = dash.data('sb_players').data;
+    P.players = num(raw, 'id', 'minutes', 'archetype_id', 'archetype_stability', 'map_x', 'map_y', 'team_possession', 'goals', 'npxg90', 'pass_pct', ...Object.keys(raw[0]).filter((k) => /^p_|^h\d+$/.test(k)));
+    P.byId = new Map(P.players.map((p) => [p.id, p]));
+    P.norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    P.players.forEach((p) => { p._key = P.norm(p.name + ' ' + (p.full_name || '') + ' ' + p.teams); });
+  }
+  function indexNeighbours() {
+    if (P.nb || !ready('sb_neighbours')) return;
+    P.nb = d3.group(num(dash.data('sb_neighbours').data, 'player_id', 'rank', 'neighbour_id', 'match_pct', 'holds_up_pct'), (r) => r.player_id);
+  }
+  const SB = () => ({ id: Number(dash.params().player), league: dash.params().sb_league || 'any', exTeam: dash.params().sb_exteam !== false, sameGroup: !!dash.params().sb_samegroup });
+
+  // ================= PLAYER STYLES =================
+  function mountStyles() {
+    const q = $('sb-q'), box = $('sb-suggest');
     let items = [], active = -1;
-    const norm = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    P.forEach((p) => { p._key = norm(p.name + ' ' + (p.full_name || '') + ' ' + p.teams.join(' ')); });
     function render() {
-      const t = norm(q.value.trim());
-      if (!t) { box.hidden = true; return; }
-      items = P.filter((p) => p._key.includes(t)).sort((a, b) => b.minutes - a.minutes).slice(0, 12);
+      indexPlayers(); if (!P.players) return;
+      const t = P.norm(q.value.trim()); if (!t) { box.hidden = true; return; }
+      items = P.players.filter((p) => p._key.includes(t)).sort((a, b) => b.minutes - a.minutes).slice(0, 12);
       active = items.length ? 0 : -1;
-      box.replaceChildren(...(items.length ? items.map((p, i) => el('button', { role: 'option', class: i === active ? 'active' : '', onclick: () => pick(p) },
-        el('span', { text: p.name }), el('small', { text: `${p.teams[0]} · ${p.subrole}` })))
-        : [el('div', { class: 'muted', style: 'padding:10px 12px', text: 'No eligible player matches. Players need 900+ minutes.' })]));
+      box.replaceChildren(...(items.length ? items.map((p, i) => { const b = mk('button', i === active ? 'active' : ''); b.setAttribute('role', 'option');
+        b.append(mk('span', null, p.name), mk('small', null, p.team + ' · ' + p.archetype)); b.addEventListener('click', () => pick(p)); return b; })
+        : [mk('div', 'muted', 'No eligible player matches (900+ minutes needed).')]));
       box.hidden = false;
     }
-    function pick(p) { q.value = ''; box.hidden = true; selectPlayer(p.id); }
+    function pick(p) { q.value = ''; box.hidden = true; P.cmp = null; dash.setParams({ player: p.id }); }
     q.addEventListener('input', render);
     q.addEventListener('keydown', (e) => {
       if (box.hidden || !items.length) return;
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        e.preventDefault(); active = (active + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
-        [...box.children].forEach((c, i) => c.classList.toggle('active', i === active));
-      } else if (e.key === 'Enter') { e.preventDefault(); pick(items[active]); } else if (e.key === 'Escape') { box.hidden = true; }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); active = (active + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length; [...box.children].forEach((c, i) => c.classList.toggle('active', i === active)); }
+      else if (e.key === 'Enter') { e.preventDefault(); pick(items[active]); } else if (e.key === 'Escape') box.hidden = true;
     });
     document.addEventListener('click', (e) => { if (!e.target.closest('.search')) box.hidden = true; });
+    document.querySelectorAll('[data-league]').forEach((b) => b.addEventListener('click', () => { P.cmp = null; dash.setParams({ sb_league: b.dataset.league }); }));
+    $('sb-exteam').addEventListener('click', () => { P.cmp = null; dash.setParams({ sb_exteam: !SB().exTeam }); });
+    $('sb-samegroup').addEventListener('click', () => { P.cmp = null; dash.setParams({ sb_samegroup: !SB().sameGroup }); });
+    $('sb-nb').addEventListener('click', (e) => { const tr = e.target.closest('tr[data-nid]'); if (tr) { P.cmp = Number(tr.dataset.nid); drawStyles(); } });
   }
-
-  function buildFilters() {
-    document.querySelectorAll('[data-league]').forEach((b) => b.addEventListener('click', () => {
-      state.league = b.dataset.league; document.querySelectorAll('[data-league]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); state.cmp = null; renderSimilar();
-    }));
-    $('#f-team').addEventListener('click', (e) => { state.exTeam = !state.exTeam; e.currentTarget.setAttribute('aria-pressed', String(state.exTeam)); state.cmp = null; renderSimilar(); });
-    $('#f-group').addEventListener('click', (e) => { state.sameGroup = !state.sameGroup; e.currentTarget.setAttribute('aria-pressed', String(state.sameGroup)); state.cmp = null; renderSimilar(); });
-  }
-
-  function selectPlayer(id, go = true) {
-    state.player = byId.get(id); state.cmp = null; store.set('psx-player', String(id));
-    if (go) showTab('similar'); else renderSimilar();
-    window.scrollTo({ top: 0 });
-  }
-
-  // Median distance between two random players (deterministic sample): the "0% match" reference.
-  let _typ = null;
-  function typicalDist() {
-    if (_typ) return _typ;
-    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    const ds = []; for (let i = 0; i < 20000; i++) { const a = P[Math.floor(rnd() * P.length)], b = P[Math.floor(rnd() * P.length)]; if (a !== b) ds.push(dist(a.space, b.space)); }
-    ds.sort((x, y) => x - y); _typ = ds[Math.floor(ds.length / 2)]; return _typ;
-  }
-
-  // ---------- similar view
-  function neighbours(p) {
-    const own = new Set(p.teams);
-    const stab = new Map(p.neighbours.map((n) => [n.id, n.stability]));
-    const all = P.filter((o) => o.id !== p.id).map((o) => ({ o, d: dist(p.space, o.space) }));
-    const rankPct = (d) => Math.max(0, 100 * (1 - d / typicalDist()));
-    return all.filter(({ o }) => (state.league === 'any' || (state.league === 'same') === (o.league === p.league))
-        && (!state.exTeam || !o.teams.some((t) => own.has(t))) && (!state.sameGroup || o.group === p.group))
-      .sort((a, b) => a.d - b.d).slice(0, 10).map(({ o, d }) => ({ o, d, sim: rankPct(d), stab: stab.has(o.id) ? stab.get(o.id) : null }));
-  }
-
-  function renderSimilar() {
-    const p = state.player; if (!p) return;
-    const role = roleById.get(p.subrole_id);
-    const card = $('#player-card');
-    card.replaceChildren(
-      el('div', { class: 'eyebrow', text: `${p.group} · ${p.league}` }),
-      el('div', { class: 'player-name', text: p.name }),
-      el('div', { class: 'row', style: 'margin-bottom:10px' }, el('span', { class: 'role-pill', text: p.subrole }), roleBadge(p)),
-      el('p', { class: 'muted', style: 'margin:0 0 10px', text: role ? role.description : '' }),
-      (() => {
-        const dl = el('dl', { class: 'facts' });
-        const add = (k, v) => { dl.append(el('dt', { text: k }), el('dd', { text: v })); };
-        add('Team', teamStr(p)); add('Main position', p.position || '—'); add('Minutes', fmt0(p.minutes));
-        add('Team possession', p.context.team_possession != null ? fmt0(p.context.team_possession) + '%' : '—');
-        add('Goals / npxG per 90', `${fmt0(p.context.goals)} / ${(p.context.npxg90 ?? 0).toFixed(2)}`);
-        add('Pass completion', p.raw.pass_pct_raw != null ? fmt0(p.raw.pass_pct_raw) + '%' : '—');
-        add('Data', p.confidence === 'Lineup minutes' ? 'Minutes from official lineups' : 'One or more lineups flagged for review');
-        return dl;
-      })(),
-      el('p', { class: 'kbd', style: 'margin:10px 0 0', text: 'Goals, xG and completion are shown as context. They are not used to measure similarity.' }));
-    drawHeat(p);
-    const list = neighbours(p);
-    const tb = $('#nb tbody');
-    if (!state.cmp && list.length) state.cmp = list[0].o.id;
-    tb.replaceChildren(...list.map((n, i) => {
-      const tr = el('tr', { class: n.o.id === state.cmp ? 'sel' : '', tabindex: '0', onclick: () => { state.cmp = n.o.id; renderSimilar(); },
-        onkeydown: (e) => { if (e.key === 'Enter') { state.cmp = n.o.id; renderSimilar(); } } },
-        el('td', { text: String(i + 1) }),
-        el('td', {}, el('div', { class: 'nm', text: n.o.name }), el('div', { class: 'sub', text: `${n.o.teams[0]} · ${n.o.league}` })),
-        el('td', { class: 'hide-sm' }, el('div', { text: n.o.subrole }), el('div', { class: 'sub', text: n.o.group })),
-        el('td', {}, el('span', { class: 'simbar' }, (() => { const i_ = el('i'); i_.style.width = n.sim.toFixed(1) + '%'; return i_; })()), el('span', { text: Math.round(n.sim) + '%' })),
-        el('td', {}, stabilityBadge(n.stab)));
+  const stabColor = (v) => v >= 60 ? 'var(--color-ok)' : v >= 30 ? 'var(--color-warn)' : 'var(--color-fg-muted)';
+  function drawStyles() {
+    const root = $('styles'); if (!root || current !== 'styles') return;
+    fillSummary(root); indexPlayers(); indexNeighbours();
+    const f = SB();
+    document.querySelectorAll('[data-league]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.league === f.league)));
+    $('sb-exteam').setAttribute('aria-pressed', String(f.exTeam)); $('sb-samegroup').setAttribute('aria-pressed', String(f.sameGroup));
+    if (!P.players) { state($('sb-card'), 'sb_players'); state($('sb-radar'), 'sb_players'); return; }
+    const p = P.byId.get(f.id) || P.players[0];
+    drawCard(p);
+    const tb = $('sb-nb').querySelector('tbody'), wrap = $('sb-nb-card').querySelector('.tbl-wrap');
+    const all = P.nb ? (P.nb.get(p.id) || []) : null;
+    if (!all) {
+      tb.replaceChildren();
+      if (BAD.includes(dash.data('sb_neighbours').status)) { const tr = mk('tr'); const c = mk('td', 'muted', 'Failed to load'); c.colSpan = 6; tr.append(c); tb.append(tr); }
+      else wrap.classList.add('dash-skeleton');
+      $('sb-cmp').hidden = true; return;
+    }
+    wrap.classList.remove('dash-skeleton');
+    const own = new Set(String(p.teams).split(' / '));
+    const list = all.filter((n) => (f.league === 'any' || (f.league === 'same') === (n.neighbour_league === p.league))
+      && (!f.exTeam || !String(n.neighbour_teams).split(' / ').some((t) => own.has(t))) && (!f.sameGroup || n.neighbour_group === p.group)).slice(0, 10);
+    if (!P.cmp || !list.some((n) => n.neighbour_id === P.cmp)) P.cmp = list.length ? list[0].neighbour_id : null;
+    tb.replaceChildren(...list.map((n) => {
+      const tr = mk('tr', 'pick' + (n.neighbour_id === P.cmp ? ' sel' : ''));
+      tr.dataset.key = encodeURIComponent(n.player_id) + ',' + encodeURIComponent(n.rank); tr.dataset.nid = n.neighbour_id; tr.tabIndex = 0;
+      tr.addEventListener('keydown', (e) => { if (e.key === 'Enter') { P.cmp = n.neighbour_id; drawStyles(); } });
+      const td = (t, cls) => { const c = mk('td', cls, t); tr.appendChild(c); return c; };
+      td(String(n.rank)); td(n.neighbour, 'txt'); td(n.neighbour_team, 'txt hide-narrow'); td(n.neighbour_archetype, 'txt hide-narrow wrap');
+      td(String(n.match_pct));
+      const h = td(''); const d = mk('span', 'dot'); d.style.background = stabColor(n.holds_up_pct); h.append(d, document.createTextNode(String(n.holds_up_pct)));
       return tr;
     }));
-    if (!list.length) tb.replaceChildren(el('tr', {}, el('td', { colspan: '5', class: 'muted', text: 'No players match these filters.' })));
-    renderCompare();
+    if (!list.length) { const tr = mk('tr'); const c = mk('td', 'muted', 'No player among the 25 nearest matches these filters. Loosen a filter.'); c.colSpan = 6; tr.appendChild(c); tb.replaceChildren(tr); }
+    $('sb-nb-note').textContent = list.length && list.length < 10 ? `Only ${list.length} of the 25 nearest pass these filters.` : '';
+    drawCompare(p, P.byId.get(P.cmp));
   }
-
-  function renderCompare() {
-    const a = state.player, b = byId.get(state.cmp);
-    const panel = $('#compare-panel');
-    panel.hidden = !b; if (!b) return;
-    $('#cmp-title').textContent = `${a.name} vs ${b.name}`;
-    $('#cmp-legend').replaceChildren(
-      el('span', {}, (() => { const i = el('i'); i.style.background = 'var(--s1)'; return i; })(), document.createTextNode(a.name)),
-      el('span', {}, (() => { const i = el('i'); i.style.background = 'var(--s2)'; return i; })(), document.createTextNode(b.name)));
-    drawRadar(a, b);
-    // explanation from percentiles (style features only)
-    const keys = D.features.map((f) => f.key);
-    const diffs = keys.map((k) => ({ k, a: a.percentiles[k], b: b.percentiles[k], d: b.percentiles[k] - a.percentiles[k] }));
-    const shared = diffs.filter((x) => Math.abs(x.d) <= 12 && (Math.min(x.a, x.b) >= 70 || Math.max(x.a, x.b) <= 30))
-      .sort((x, y) => Math.abs(50 - (y.a + y.b) / 2) - Math.abs(50 - (x.a + x.b) / 2)).slice(0, 4);
-    const apart = diffs.slice().sort((x, y) => Math.abs(y.d) - Math.abs(x.d)).slice(0, 3);
-    const lab = (k) => featLabel[k].toLowerCase();
-    const why = $('#why');
-    why.replaceChildren(
-      el('div', {}, el('b', { text: 'Alike: ' }), shared.length
-        ? el('ul', {}, ...shared.map((x) => el('li', { text: `both ${(x.a + x.b) / 2 >= 50 ? 'high' : 'low'} on ${lab(x.k)} (${Math.round(x.a)} and ${Math.round(x.b)})` })))
-        : document.createTextNode('similar overall shape, no single standout shared trait.')),
-      el('div', {}, el('b', { text: 'Differ most: ' }), el('ul', {}, ...apart.map((x) => el('li', { text: `${x.d > 0 ? b.name : a.name} has more ${lab(x.k)} (${Math.round(x.a)} vs ${Math.round(x.b)})` })))),
-      el('p', { class: 'muted', style: 'margin:0', text: 'Numbers are percentiles among all eligible outfield players. A nearest neighbour is the closest available comparison, not necessarily a close match, and never a replacement probability.' }),
-      el('button', { class: 'chip', style: 'justify-self:start', onclick: () => selectPlayer(b.id), text: `Open ${b.name}'s profile` }));
+  function drawCard(p) {
+    const card = $('sb-card'); card.classList.remove('dash-skeleton');
+    const w = 'id=' + p.id;
+    const val = (field, text, tag = 'b') => { const b = mk(tag, null, text); b.setAttribute('data-source', 'sb_players'); b.setAttribute('data-field', field); b.setAttribute('data-where', w); return b; };
+    const dl = mk('dl', 'facts');
+    const add = (k, ...nodes) => { const dd = mk('dd'); nodes.forEach((n) => dd.append(n)); dl.append(mk('dt', null, k), dd); };
+    add('Team', val('teams', p.teams)); add('League', val('league', p.league)); add('Main position', val('position', p.position));
+    add('Minutes', val('minutes', comma(p.minutes)));
+    add('Archetype kept', val('archetype_stability', String(p.archetype_stability)), '% of resamples');
+    if (p.team_possession != null) add('Team possession', val('team_possession', String(p.team_possession)), '%');
+    add('Output', val('goals', String(p.goals)), ' goals · ', val('npxg90', fmt2(p.npxg90)), ' npxG/90');
+    if (p.pass_pct != null) add('Pass completion', val('pass_pct', String(p.pass_pct)), '%');
+    const name = mk('div', 'pname'); name.append(val('name', p.name, 'span'));
+    const arch = val('archetype', p.archetype, 'span'); arch.className = 'pill';
+    const grp = val('group', p.group, 'span'); grp.className = 'muted';
+    card.replaceChildren(grp, name, arch, dl,
+      mk('p', 'muted', 'Output and completion are context only, not used for similarity.' + (/true/i.test(String(p.lineup_flag)) ? ' One of this player\'s lineups had a StatsBomb inconsistency.' : '')));
   }
-
-  function drawRadar(a, b) {
-    const host = $('#radar'); host.replaceChildren();
-    const keys = D.radar, n = keys.length, W = 420, H = 320, cx = W / 2, cy = H / 2 + 2, R = 104;
-    const SHORT = { passes90: 'Passes', prog_passes90: 'Prog. passes', prog_carries90: 'Prog. carries', dribbles90: 'Take-ons', shots90: 'Shots', pressures90: 'Pressures', tackles90: 'Tackles', aerials90: 'Aerials' };
-    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Radar comparing ${a.name} and ${b.name} on ${n} measures` });
-    const ang = (i) => -Math.PI / 2 + (i / n) * 2 * Math.PI;
-    [25, 50, 75, 100].forEach((r) => {
-      const pts = keys.map((_, i) => [cx + Math.cos(ang(i)) * R * r / 100, cy + Math.sin(ang(i)) * R * r / 100].join(',')).join(' ');
-      svg.append(sv('polygon', { points: pts, fill: 'none', stroke: 'var(--line)', 'stroke-width': r === 50 ? 1.4 : 1 }));
-    });
-    keys.forEach((k, i) => {
-      svg.append(sv('line', { x1: cx, y1: cy, x2: cx + Math.cos(ang(i)) * R, y2: cy + Math.sin(ang(i)) * R, stroke: 'var(--line)' }));
-      const lx = cx + Math.cos(ang(i)) * (R + 16), ly = cy + Math.sin(ang(i)) * (R + 16);
-      const t = sv('text', { x: lx, y: ly, 'font-size': 11.5, fill: 'var(--fg-2)', 'text-anchor': Math.abs(Math.cos(ang(i))) < 0.3 ? 'middle' : Math.cos(ang(i)) > 0 ? 'start' : 'end', 'dominant-baseline': 'middle' });
-      t.textContent = SHORT[k] || featLabel[k].replace(' (adj.)', ''); svg.append(t);
-    });
-    [[a, 'var(--s1)'], [b, 'var(--s2)']].forEach(([p, c]) => {
-      const pts = keys.map((k, i) => { const v = Math.max(4, p.percentiles[k]); return [cx + Math.cos(ang(i)) * R * v / 100, cy + Math.sin(ang(i)) * R * v / 100]; });
-      svg.append(sv('polygon', { points: pts.map((x) => x.join(',')).join(' '), fill: c, 'fill-opacity': 0.12, stroke: c, 'stroke-width': 2, 'stroke-linejoin': 'round' }));
-      pts.forEach(([x, y], i) => { const dot = sv('circle', { cx: x, cy: y, r: 4, fill: c, stroke: 'var(--panel)', 'stroke-width': 2 });
-        const tt = sv('title'); tt.textContent = `${p.name}: ${featLabel[keys[i]]} — percentile ${Math.round(p.percentiles[keys[i]])}`; dot.append(tt); svg.append(dot); });
-    });
-    host.append(svg);
-    host.append(el('p', { class: 'kbd', style: 'margin:4px 0 0', text: 'Percentile among all eligible outfield players. Defensive counts are adjusted for team possession.' }));
-  }
-
-  function drawHeat(p) {
-    const host = $('#heat'); host.replaceChildren();
-    const W = 330, H = 220, m = 6, pw = W - 2 * m, ph = H - 2 * m;
-    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `Action locations for ${p.name}` });
-    svg.append(sv('rect', { x: m, y: m, width: pw, height: ph, rx: 4, fill: 'var(--pitch)', stroke: 'var(--pitch-line)' }));
-    const max = Math.max(...p.heatmap.map((v) => v || 0), 1e-6);
-    const ramp = ['--seq-0', '--seq-1', '--seq-2', '--seq-3', '--seq-4', '--seq-5'];
-    const tip = el('div', { class: 'tip', hidden: '' });
+  function drawPitch(host, p, color) {
+    host.replaceChildren();
+    const W = host.clientWidth || 280, H = Math.round(W * 0.62), m = 3, pw = W - 2 * m, ph = H - 2 * m;
+    const svg = d3.select(host).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', `Action zones for ${p.name}`);
+    const vals = d3.range(30).map((i) => p['h' + i] || 0), max = d3.max(vals) || 1;
+    const tip = tipBox(host);
     for (let xi = 0; xi < 6; xi++) for (let yi = 0; yi < 5; yi++) {
-      const v = p.heatmap[xi * 5 + yi] || 0, lvl = Math.min(5, Math.floor((v / max) * 5.999));
-      const r = sv('rect', { x: m + xi * pw / 6 + 1, y: m + yi * ph / 5 + 1, width: pw / 6 - 2, height: ph / 5 - 2, rx: 3, fill: `var(${ramp[lvl]})`, 'fill-opacity': v ? 0.92 : 0 });
-      r.addEventListener('pointerenter', () => { tip.replaceChildren(el('b', { text: (v * 100).toFixed(1) + '% of actions' })); tip.hidden = false;
-        const rect = host.getBoundingClientRect(), s = rect.width / W; tip.style.left = Math.min(rect.width - 130, (m + xi * pw / 6) * s) + 'px'; tip.style.top = Math.max(0, (m + yi * ph / 5) * s - 30) + 'px'; });
-      r.addEventListener('pointerleave', () => { tip.hidden = true; });
-      svg.append(r);
+      const v = vals[xi * 5 + yi];
+      svg.append('rect').attr('x', m + xi * pw / 6).attr('y', m + yi * ph / 5).attr('width', pw / 6).attr('height', ph / 5)
+        .attr('fill', color).attr('fill-opacity', v ? 0.06 + 0.75 * v / max : 0)
+        .on('pointerenter', () => { tipLine(tip, p.name, [[color, 'Share of actions', pct1(v)]]); placeTip(tip, host, (m + (xi + 0.5) * pw / 6) * host.clientWidth / W, (m + yi * ph / 5) * host.clientWidth / W); })
+        .on('pointerleave', () => { tip.hidden = true; });
     }
-    // pitch lines on top
-    const line = (attrs) => svg.append(sv('line', { stroke: 'var(--pitch-line)', 'stroke-width': 1.2, ...attrs }));
-    line({ x1: m + pw / 2, x2: m + pw / 2, y1: m, y2: m + ph });
-    svg.append(sv('circle', { cx: m + pw / 2, cy: m + ph / 2, r: ph * 0.13, fill: 'none', stroke: 'var(--pitch-line)', 'stroke-width': 1.2 }));
-    const bw = pw * 16.5 / 105, bh = ph * 40.3 / 68;
-    svg.append(sv('rect', { x: m, y: m + (ph - bh) / 2, width: bw, height: bh, fill: 'none', stroke: 'var(--pitch-line)', 'stroke-width': 1.2 }));
-    svg.append(sv('rect', { x: m + pw - bw, y: m + (ph - bh) / 2, width: bw, height: bh, fill: 'none', stroke: 'var(--pitch-line)', 'stroke-width': 1.2 }));
-    const arrow = sv('text', { x: W - m - 4, y: H - m - 6, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--fg-3)' }); arrow.textContent = 'Attack →'; svg.append(arrow);
-    host.append(svg, tip);
-  }
-
-  // ---------- archetypes
-  function buildArchetypes() {
-    const chips = $('#group-chips');
-    state.group = D.groups[0];
-    chips.replaceChildren(...D.groups.map((g) => el('button', { class: 'chip', 'aria-pressed': String(g === state.group), onclick: () => { state.group = g; state.role = null; renderArchetypes(); }, text: `${g} (${D.summary.group_counts[g]})` })));
-    renderArchetypes();
-  }
-  function renderArchetypes() {
-    $('#group-chips').querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c.textContent.startsWith(state.group + ' ('))));
-    const roles = D.subroles.filter((s) => s.group === state.group);
-    if (state.role == null || !roles.some((r) => r.id === state.role)) state.role = roles[0].id;
-    $('#role-cards').replaceChildren(...roles.map((r) => {
-      const feats = [...r.top, ...r.low.slice(0, 2)];
-      return el('button', { class: 'card', 'aria-pressed': String(r.id === state.role), onclick: () => { state.role = r.id; renderArchetypes(); } },
-        el('div', { class: 'row', style: 'justify-content:space-between' }, el('h3', { text: r.name }), el('span', { class: 'muted', text: `${r.count} players` })),
-        el('div', { class: 'stack', style: 'gap:6px' }, ...feats.map((k) => {
-          const v = r.percentiles[k]; const i = el('i'); i.style.width = Math.max(2, v) + '%';
-          return el('div', { class: 'pbar' }, el('span', { text: featLabel[k] }), el('span', { class: 'track' }, i), el('span', { class: 'v', text: Math.round(v) }));
-        })),
-        el('div', { class: 'muted', text: 'e.g. ' + r.examples.slice(0, 3).join(', ') }));
-    }));
-    const r = roleById.get(state.role);
-    const mem = P.filter((p) => p.subrole_id === r.id).sort((a, b) => b.subrole_stability - a.subrole_stability || b.minutes - a.minutes);
-    const core = mem.filter((p) => p.subrole_stability >= 0.8).length;
-    $('#role-detail').replaceChildren(
-      el('div', {}, el('h2', { text: r.name }), el('p', { class: 'muted', style: 'margin:0', text: `${r.description} ${core} of ${mem.length} are core members. Click a player to find similar styles.` })),
-      el('div', { class: 'members' }, ...mem.map((p) => el('button', { class: 'member', onclick: () => selectPlayer(p.id), title: `${p.teams[0]} · ${p.league}` },
-        el('span', { text: `${p.name} · ${p.teams[0]}` }), roleBadge(p)))));
-  }
-
-  // ---------- map
-  function buildMapControls() {
-    const s = $('#map-role');
-    s.append(el('option', { value: '', text: 'Selected player only' }));
-    D.groups.forEach((g) => { const og = el('optgroup', { label: g }); D.subroles.filter((r) => r.group === g).forEach((r) => og.append(el('option', { value: String(r.id), text: r.name }))); s.append(og); });
-    s.addEventListener('change', drawMap);
-  }
-  function drawMap() {
-    const host = $('#scatter'); host.replaceChildren();
-    const p0 = state.player, roleSel = $('#map-role').value === '' ? null : Number($('#map-role').value);
-    const nbIds = new Set(p0 ? neighbours(p0).slice(0, 5).map((n) => n.o.id) : []);
-    const W = Math.max(320, host.clientWidth || 900), H = Math.round(Math.min(620, W * 0.62)), m = { l: 36, r: 12, t: 10, b: 30 };
-    const xs = P.map((p) => p.map[0]), ys = P.map((p) => p.map[1]);
-    const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-    const X = (v) => m.l + (v - x0) / (x1 - x0) * (W - m.l - m.r), Y = (v) => H - m.b - (v - y0) / (y1 - y0) * (H - m.t - m.b);
-    const svg = sv('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Style map of all eligible players' });
-    svg.append(sv('line', { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), stroke: 'var(--line)' }), sv('line', { x1: X(0), x2: X(0), y1: m.t, y2: H - m.b, stroke: 'var(--line)' }));
-    const ax = (txt, x, y, anchor, rot) => { const t = sv('text', { x, y, 'font-size': 12, fill: 'var(--fg-3)', 'text-anchor': anchor }); if (rot) t.setAttribute('transform', `rotate(-90 ${x} ${y})`); t.textContent = txt; svg.append(t); };
-    const top = (pc) => { const L = D.loadings.slice().sort((a, b) => Math.abs(b[pc]) - Math.abs(a[pc])).slice(0, 2); return L.map((l) => (l[pc] > 0 ? '+' : '−') + (featLabel[l.feature] || l.feature).toLowerCase()).join(', '); };
-    ax(`Dimension 1 (${top('PC1')})`, W - m.r, H - 6, 'end');
-    ax(`Dimension 2 (${top('PC2')})`, 12, m.t, 'end', true);
-    const tip = el('div', { class: 'tip', hidden: '' });
-    const order = P.slice().sort((a, b) => rank(a) - rank(b));
-    function rank(p) { return p.id === p0?.id ? 3 : nbIds.has(p.id) ? 2 : roleSel != null && p.subrole_id === roleSel ? 1 : 0; }
-    const color = ['var(--muted-dot)', 'var(--s1)', 'var(--s3)', 'var(--s2)'];
-    order.forEach((p) => {
-      const rk = rank(p);
-      const c = sv('circle', { cx: X(p.map[0]), cy: Y(p.map[1]), r: rk === 3 ? 7 : rk === 2 ? 5.5 : 4, fill: color[rk], stroke: 'var(--panel)', 'stroke-width': rk ? 2 : 1, 'fill-opacity': rk ? 1 : 0.8, style: 'cursor:pointer' });
-      c.addEventListener('pointerenter', () => { tip.replaceChildren(el('b', { text: p.name }), document.createTextNode(`${p.subrole} · ${p.teams[0]}`)); tip.hidden = false;
-        const s = host.getBoundingClientRect().width / W; tip.style.left = Math.min(host.clientWidth - 220, X(p.map[0]) * s + 10) + 'px'; tip.style.top = Math.max(0, Y(p.map[1]) * s - 44) + 'px'; });
-      c.addEventListener('pointerleave', () => { tip.hidden = true; });
-      c.addEventListener('click', () => selectPlayer(p.id));
-      svg.append(c);
+    // pitch markings on top of the zones, drawn in the text colour so they read clearly in both themes
+    const L = svg.append('g').attr('fill', 'none').attr('stroke', 'var(--color-fg)').attr('stroke-opacity', 0.75).attr('stroke-width', 1.6).style('pointer-events', 'none');
+    const sx = pw / 105, sy = ph / 68, X = (v) => m + v * sx, Y = (v) => m + v * sy;
+    L.append('rect').attr('x', m).attr('y', m).attr('width', pw).attr('height', ph).attr('rx', 2);
+    L.append('line').attr('x1', X(52.5)).attr('x2', X(52.5)).attr('y1', m).attr('y2', m + ph);
+    L.append('circle').attr('cx', X(52.5)).attr('cy', Y(34)).attr('r', 9.15 * sx);
+    L.append('circle').attr('cx', X(52.5)).attr('cy', Y(34)).attr('r', 1.8).attr('fill', 'var(--color-fg)');
+    [[0, 1], [105, -1]].forEach(([x0, dir]) => {
+      L.append('rect').attr('x', dir > 0 ? X(0) : X(105 - 16.5)).attr('y', Y(34 - 20.16)).attr('width', 16.5 * sx).attr('height', 40.32 * sy);
+      L.append('rect').attr('x', dir > 0 ? X(0) : X(105 - 5.5)).attr('y', Y(34 - 9.16)).attr('width', 5.5 * sx).attr('height', 18.32 * sy);
+      L.append('circle').attr('cx', X(x0 + dir * 11)).attr('cy', Y(34)).attr('r', 1.8).attr('fill', 'var(--color-fg)');
+      L.append('line').attr('x1', X(x0)).attr('x2', X(x0)).attr('y1', Y(34 - 3.66)).attr('y2', Y(34 + 3.66)).attr('stroke-width', 4);
     });
-    if (p0) { const t = sv('text', { x: X(p0.map[0]) + 10, y: Y(p0.map[1]) - 10, 'font-size': 13, 'font-weight': 600, fill: 'var(--fg)' }); t.textContent = p0.name; svg.append(t); }
-    host.append(svg, tip);
-    const sw = (c, t) => el('span', {}, (() => { const i = el('i'); i.style.background = c; i.style.borderRadius = '50%'; return i; })(), document.createTextNode(t));
-    $('#map-legend').replaceChildren(sw('var(--s2)', p0 ? p0.name : 'Selected player'), sw('var(--s3)', 'Top 5 similar'),
-      ...(roleSel != null ? [sw('var(--s1)', roleById.get(roleSel).name)] : []), sw('var(--muted-dot)', 'Other players'));
   }
-  window.addEventListener('resize', () => { if (state.tab === 'map') drawMap(); });
+  function drawCompare(a, b) {
+    const box = $('sb-cmp'); box.hidden = !b; if (!b) return;
+    if (!ready('sb_features')) { state($('sb-radar'), 'sb_features'); return; }
+    const feats = dash.data('sb_features').data; const lab = Object.fromEntries(feats.map((f) => [f.key, f.label]));
+    const cA = dash.colors[0], cB = dash.colors[1];
+    $('sb-cmp-title').textContent = `${a.name} vs ${b.name}`;
+    $('sb-cmp-legend').replaceChildren(swatch(cA, a.name), swatch(cB, b.name));
+    const host = $('sb-radar'); host.classList.remove('dash-skeleton'); host.replaceChildren();
+    const keys = ['passes90', 'prog_passes90', 'prog_carries90', 'dribbles90', 'shots90', 'pressures90', 'tackles90', 'aerials90'];
+    const SH = { passes90: 'Passes', prog_passes90: 'Prog. passes', prog_carries90: 'Prog. carries', dribbles90: 'Take-ons', shots90: 'Shots', pressures90: 'Pressures', tackles90: 'Tackles', aerials90: 'Aerials' };
+    const W = 400, H = 300, cx = W / 2, cy = H / 2 + 2, R = 102, n = keys.length;
+    const svg = d3.select(host).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', `Radar of ${a.name} and ${b.name}`);
+    const ang = (i) => -Math.PI / 2 + i / n * 2 * Math.PI;
+    [25, 50, 75, 100].forEach((r) => svg.append('polygon').attr('points', keys.map((_, i) => [cx + Math.cos(ang(i)) * R * r / 100, cy + Math.sin(ang(i)) * R * r / 100].join(',')).join(' ')).attr('fill', 'none').attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', r === 50 ? 1.5 : 1));
+    keys.forEach((k, i) => {
+      svg.append('line').attr('x1', cx).attr('y1', cy).attr('x2', cx + Math.cos(ang(i)) * R).attr('y2', cy + Math.sin(ang(i)) * R).attr('stroke', 'var(--cds-chart-grid)');
+      const c = Math.cos(ang(i));
+      svg.append('text').attr('x', cx + c * (R + 14)).attr('y', cy + Math.sin(ang(i)) * (R + 14)).attr('dominant-baseline', 'middle')
+        .attr('text-anchor', Math.abs(c) < 0.3 ? 'middle' : c > 0 ? 'start' : 'end').attr('font-size', 12).attr('fill', 'var(--color-fg-muted)').text(SH[k]);
+    });
+    const tip = tipBox(host);
+    [[a, cA], [b, cB]].forEach(([p, col]) => {
+      const pts = keys.map((k, i) => { const v = Math.max(4, p['p_' + k] ?? 0); return [cx + Math.cos(ang(i)) * R * v / 100, cy + Math.sin(ang(i)) * R * v / 100]; });
+      svg.append('polygon').attr('points', pts.map((x) => x.join(',')).join(' ')).attr('fill', col).attr('fill-opacity', 0.12).attr('stroke', col).attr('stroke-width', 2).attr('stroke-linejoin', 'round');
+      pts.forEach(([x, y], i) => svg.append('circle').attr('cx', x).attr('cy', y).attr('r', 4).attr('fill', col).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2)
+        .on('pointerenter', () => { tipLine(tip, lab[keys[i]], [[col, p.name, 'percentile ' + p['p_' + keys[i]]]]); placeTip(tip, host, x * host.clientWidth / W, y * host.clientWidth / W); })
+        .on('pointerleave', () => { tip.hidden = true; }));
+    });
+    $('sb-pitches').classList.remove('dash-skeleton');
+    const lbl = (el, p, c) => { const d = mk('span', 'dot'); d.style.background = c; el.replaceChildren(d, document.createTextNode(p.name)); };
+    lbl($('sb-pa-label'), a, cA); lbl($('sb-pb-label'), b, cB);
+    drawPitch($('sb-pa'), a, cA); drawPitch($('sb-pb'), b, cB);
+    const ks = feats.map((f) => f.key).filter((k) => a['p_' + k] != null && b['p_' + k] != null);
+    const d = ks.map((k) => ({ k, a: a['p_' + k], b: b['p_' + k] }));
+    const shared = d.filter((x) => Math.abs(x.a - x.b) <= 12 && (Math.min(x.a, x.b) >= 70 || Math.max(x.a, x.b) <= 30))
+      .sort((x, y) => Math.abs(50 - (y.a + y.b) / 2) - Math.abs(50 - (x.a + x.b) / 2)).slice(0, 4);
+    const apart = d.slice().sort((x, y) => Math.abs(y.b - y.a) - Math.abs(x.b - x.a)).slice(0, 3);
+    const v = (p, k) => { const s = mk('b', 'v', String(p['p_' + k])); s.setAttribute('data-source', 'sb_players'); s.setAttribute('data-field', 'p_' + k); s.setAttribute('data-where', 'id=' + p.id); return s; };
+    const li = (parts) => { const l = mk('li'); parts.forEach((x) => l.append(typeof x === 'string' ? document.createTextNode(x) : x)); return l; };
+    const alike = mk('div'); alike.append(mk('h3', null, 'Alike'));
+    const ul1 = mk('ul'); shared.forEach((x) => ul1.append(li([`Both ${(x.a + x.b) / 2 >= 50 ? 'high' : 'low'} on ${lab[x.k].toLowerCase()} (`, v(a, x.k), ' and ', v(b, x.k), ')'])));
+    if (!shared.length) ul1.append(li(['Similar overall shape; no single standout shared trait']));
+    alike.append(ul1);
+    const diff = mk('div'); diff.append(mk('h3', null, 'Differ most'));
+    const ul2 = mk('ul'); apart.forEach((x) => ul2.append(li([`${x.b > x.a ? b.name : a.name} has more ${lab[x.k].toLowerCase()} (`, v(a, x.k), ' vs ', v(b, x.k), ')'])));
+    diff.append(ul2);
+    const open = mk('button', 'chip', `Open ${b.name}`); open.style.justifySelf = 'start';
+    open.addEventListener('click', () => { P.cmp = null; dash.setParams({ player: b.id }); });
+    $('sb-why').replaceChildren(alike, diff, mk('p', 'muted', 'Percentiles among all eligible outfield players; defensive counts adjusted for team possession.'), open);
+  }
 
-  // ---------- method
-  function buildMethod() {
-    const s = D.summary;
-    const ariVals = Object.values(s.subrole_ari || {});
-    const ari = ariVals.length ? ariVals.reduce((a, b) => a + b, 0) / ariVals.length : null;
-    const stat = (n, l) => el('div', { class: 'stat' }, el('div', { class: 'n', text: n }), el('div', { class: 'l', text: l }));
-    $('#method-stats').replaceChildren(
-      stat(s.eligible.toLocaleString('en'), `outfield players with ${s.min_minutes}+ minutes, from ${s.matches.toLocaleString('en')} matches`),
-      stat(String(s.subroles), 'archetypes across 5 position groups'),
-      stat(Math.round(s.pca_variance * 100) + '%', `of style variation kept in ${s.pca_components} search dimensions`),
-      stat(Math.round(s.top5_overlap * 100) + '%', `of a player's top-5 neighbours survive a match resample, on average (${s.bootstraps} resamples)`),
-      stat(ari != null ? ari.toFixed(2) : '—', 'average archetype agreement across resamples (adjusted Rand index; 1 = identical)'),
-      stat(Math.round(s.top5_same_league * 100) + '%', `of top-5 neighbours share a league, vs ${Math.round(s.chance_same_league * 100)}% by chance`));
-    const P_ = (t) => el('p', { text: t });
-    const h = (t) => el('h3', { text: t });
-    $('#method-text').replaceChildren(
-      h('What the data is'),
-      P_('StatsBomb Open Data event files for every 2015/16 match in the Premier League, La Liga, Serie A and Ligue 1. StatsBomb only publishes one team\'s Bundesliga season for that year, so the Bundesliga is left out. Minutes come from the official lineups (on/off times, including stoppage time). ' + s.roster_issues + ' of ' + s.team_matches.toLocaleString('en') + ' team-match lineups contain small StatsBomb inconsistencies and are flagged on affected players.'),
-      h('How style is measured'),
-      P_('27 style measures per player: volume (passes, receptions, carries, take-ons), passing style (long and forward share, progressive passes, crosses, passes leading to shots), progressive carries, where actions happen, defending (pressures, tackles, interceptions, recoveries, clearances, blocks, aerials, how high defensive actions happen, fouls) and shooting (shots and chance quality per shot). Counts are per 90 minutes. Defensive counts are adjusted for team possession, because a team without the ball has more chances to defend.'),
-      P_('Performance is kept out of the similarity on purpose: goals, xG per 90, pass completion and duel win rates are shown as context only, so two players doing the same job are not pushed apart because one finished better that season.'),
-      h('Similarity'),
-      P_('Measures are capped at the 1st and 99th percentiles, standardised, and compressed with PCA into the dimensions that hold 85% or more of the variation. Similarity is distance in that space. The match score compares that distance with the typical distance between two random players: 100% is an identical profile, 0% is as different as a random pair.'),
-      h('Archetypes'),
-      P_('Players are grouped by the position family they played most, then clustered on style within it. The number of archetypes per group is the most detailed split that stays reproducible across random starts (agreement ≥ 0.8, every archetype ≥ 15 players). Styles blend into each other, so archetypes are guides, not boxes: each player shows whether they are a core member or sit on the border.'),
-      h('How much to trust it'),
-      P_(`Resampling whole matches tests whether results survive a different run of games. On average ${Math.round(s.top5_overlap * 100)}% of a player's top-5 neighbours survive, and ${Math.round(s.stable_neighbour_share * 100)}% of all top-5 links are stable (in the top 5 in at least 60% of resamples). Treat the "Holds up" badge as the confidence level for each suggestion. Top-5 neighbours share a team ${Math.round(s.top5_same_team * 100 * 10) / 10}% of the time vs ${Math.round(s.chance_same_team * 1000) / 10}% by chance, and a league ${Math.round(s.top5_same_league * 100)}% vs ${Math.round(s.chance_same_league * 100)}%, so team and league context matter a little.`),
-      P_('Event data cannot see off-ball movement, tactical instructions or player quality. Similar here means "recorded a similar pattern of actions in 2015/16", not "could replace".'),
-      el('p', { class: 'muted' }, document.createTextNode('Data: '), el('a', { href: 'https://github.com/statsbomb/open-data', target: '_blank', rel: 'noopener', text: 'StatsBomb Open Data' }), document.createTextNode('. Code and method: see the repository README and docs/METHODOLOGY.md.')));
+  // ================= ARCHETYPES =================
+  // Two-step selector: position groups first; picking one swaps the row for that group's archetypes.
+  const AR = () => ({ group: dash.params().ar_group || null, arch: dash.params().ar_arch });
+  function mountArchetypes() {
+    $('ar-members').addEventListener('click', (e) => { const tr = e.target.closest('tr[data-key]'); if (tr) { P.cmp = null; dash.setParams({ player: Number(decodeURIComponent(tr.dataset.key)) }); show('styles'); } });
   }
+  function drawArchetypes() {
+    const root = $('archetypes'); if (!root || current !== 'archetypes') return;
+    fillSummary(root);
+    const detail = $('ar-detail');
+    const got = state(detail, 'sb_archetypes', 'sb_archetype_profiles'); if (!got) return;
+    const arch = num(got[0], 'id', 'players', 'core_players'), prof = num(got[1], 'archetype_id', 'percentile_in_group');
+    const groups = [...new Set(arch.map((a) => a.group))];
+    const f = AR();
+    const group = groups.includes(f.group) ? f.group : null;
+    const pool = group ? arch.filter((a) => a.group === group) : arch;
+    const sel = pool.find((a) => a.id === Number(f.arch)) || pool[0];
+    const row = $('ar-select');
+    if (!group) {
+      row.replaceChildren(mk('span', 'label', 'Position'), ...groups.map((g) => { const b = mk('button', 'chip', g); b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', () => dash.setParams({ ar_group: g, ar_arch: null })); return b; }));
+    } else {
+      const back = mk('button', 'chip back', '← ' + group); back.title = 'Back to all positions'; back.addEventListener('click', () => dash.setParams({ ar_group: null }));
+      row.replaceChildren(back, mk('span', 'sep'), ...pool.map((a) => { const b = mk('button', 'chip', a.name); b.setAttribute('aria-pressed', String(a.id === sel.id)); b.addEventListener('click', () => dash.setParams({ ar_arch: a.id })); return b; }));
+    }
+    const cnt = (field, v) => { const s = mk('b', null, String(v)); s.setAttribute('data-source', 'sb_archetypes'); s.setAttribute('data-field', field); s.setAttribute('data-where', 'id=' + sel.id); return s; };
+    const meta = mk('p', 'muted'); meta.append(cnt('players', sel.players), document.createTextNode(' players · '), cnt('core_players', sel.core_players), document.createTextNode(' core members'));
+    const bars = mk('div'); bars.style.cssText = 'display:grid;gap:10px;margin-top:4px';
+    const barRow = (k, hi) => {
+      const r = prof.find((x) => x.archetype_id === sel.id && x.feature === k); if (!r) return;
+      const rw = mk('div', 'pbar'); const tr = mk('span', 'track'); const fill = mk('i'); fill.style.width = Math.max(2, r.percentile_in_group) + '%';
+      fill.style.background = hi ? dash.colors[0] : 'var(--cds-chart-muted)'; tr.append(fill);
+      const vv = mk('span', 'v', String(r.percentile_in_group)); vv.setAttribute('data-source', 'sb_archetype_profiles'); vv.setAttribute('data-field', 'percentile_in_group'); vv.setAttribute('data-where', `archetype_id=${sel.id}&feature=${k}`);
+      rw.append(mk('span', null, r.label), tr, vv); bars.append(rw);
+    };
+    bars.append(mk('span', 'muted', 'Highest traits'));
+    String(sel.top_features).split(',').forEach((k) => barRow(k, true));
+    bars.append(mk('span', 'muted', 'Lowest traits'));
+    String(sel.low_features).split(',').slice(0, 2).forEach((k) => barRow(k, false));
+    const aname = mk('div', 'aname'); const an = mk('span', null, sel.name); an.setAttribute('data-source', 'sb_archetypes'); an.setAttribute('data-field', 'name'); an.setAttribute('data-where', 'id=' + sel.id); aname.append(an);
+    detail.replaceChildren(mk('span', 'muted', sel.group), aname, meta, bars, mk('p', 'muted', 'Average percentile within the position group; the tick marks the group middle (50).'));
+    $('ar-members-title').textContent = 'Members: ' + sel.name;
+    indexPlayers();
+    if (!P.players) { state($('ar-map'), 'sb_players'); return; }
+    const members = P.players.filter((p) => p.archetype_id === sel.id).sort((x, y) => y.archetype_stability - x.archetype_stability || y.minutes - x.minutes);
+    $('ar-members').querySelector('tbody').replaceChildren(...members.map((p) => {
+      const tr = mk('tr', 'pick'); tr.dataset.key = encodeURIComponent(p.id);
+      [[p.name, 'txt'], [p.team, 'txt'], [p.league, 'txt hide-narrow'], [p.position, 'txt hide-narrow'], [comma(p.minutes)]].forEach(([t, c]) => tr.append(mk('td', c, t)));
+      const k = mk('td'); const d = mk('span', 'dot'); d.style.background = p.archetype_stability >= 80 ? 'var(--color-ok)' : p.archetype_stability >= 50 ? 'var(--color-warn)' : 'var(--color-fg-muted)';
+      k.append(d, document.createTextNode(String(p.archetype_stability))); tr.append(k); return tr;
+    }));
+    drawArMap(sel);
+  }
+  function drawArMap(sel) {
+    const host = $('ar-map'); host.classList.remove('dash-skeleton'); host.replaceChildren();
+    const W = host.clientWidth || 600, H = Math.max(280, Math.round(W * 0.56)), m = 8;
+    const svg = d3.select(host).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Style map of all players');
+    const x = d3.scaleLinear(d3.extent(P.players, (p) => p.map_x), [m, W - m]).nice(), y = d3.scaleLinear(d3.extent(P.players, (p) => p.map_y), [H - m, m]).nice();
+    svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', m).attr('y2', H - m).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('line').attr('x1', m).attr('x2', W - m).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-grid)');
+    const inSel = (p) => p.archetype_id === sel.id;
+    const tip = tipBox(host);
+    svg.append('g').selectAll('circle').data(P.players.slice().sort((a, b) => inSel(a) - inSel(b))).join('circle')
+      .attr('cx', (p) => x(p.map_x)).attr('cy', (p) => y(p.map_y)).attr('r', (p) => inSel(p) ? 5 : 3)
+      .attr('fill', (p) => inSel(p) ? (p.archetype_stability >= 80 ? dash.colors[0] : 'var(--color-panel)') : 'var(--cds-chart-muted)')
+      .attr('stroke', (p) => inSel(p) ? dash.colors[0] : 'none').attr('stroke-width', 1.6).attr('fill-opacity', (p) => inSel(p) ? 1 : 0.5)
+      .style('cursor', 'pointer')
+      .on('pointerenter', (e, p) => { tipLine(tip, p.name, [[null, p.archetype, ''], [null, p.team, '']]); placeTip(tip, host, x(p.map_x) * host.clientWidth / W, y(p.map_y) * host.clientWidth / W); })
+      .on('pointerleave', () => { tip.hidden = true; })
+      .on('click', (e, p) => { P.cmp = null; dash.setParams({ player: p.id }); show('styles'); });
+    $('ar-legend').replaceChildren(swatch(dash.colors[0], 'Core member', true), swatch('var(--color-border-line)', 'Borderline (hollow)', true), swatch('var(--cds-chart-muted)', 'Other players', true));
+  }
+
+  const MOUNT = { styles: mountStyles, archetypes: mountArchetypes };
+  const DRAW = { styles: drawStyles, archetypes: drawArchetypes };
+  show(PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'styles', false);
+  dash.onData(() => { if (current) DRAW[current](); });
 })();
 </script>
+
+<footer class="site-foot">
+  <span>Data: <a href="https://github.com/statsbomb/open-data" target="_blank" rel="noopener">StatsBomb Open Data</a> 2015/16</span>
+  <span><a id="repo-link" href="https://github.com/markisinc/football-player-archetypes" target="_blank" rel="noopener">Code &amp; methodology on GitHub</a></span>
+  <span>Built by John Akinyemi</span>
+</footer>
+</div>
+</body>
+</html>

@@ -9,7 +9,7 @@ Similarity describes the recorded style of play in 2015/16. It does not measure 
 
 ## Run it
 
-See the [README](../README.md#run-it-yourself). `src/sb_profiling.py` writes `outputs/profiling_sb/` and refreshes `docs/profiles.json`, which the live explorer reads.
+See the [README](../README.md#run-it-yourself). `src/sb_profiling.py` writes `outputs/profiling_sb/` and refreshes `docs/data/`, the CSV files the live explorer reads.
 
 ## Results (30 whole-match resamples)
 

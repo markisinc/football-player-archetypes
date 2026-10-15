@@ -567,6 +567,8 @@ def main():
     exp.to_csv(OUT / "player_profiles.csv")
     (OUT / "model_transform.json").write_text(json.dumps(clean_json(dict(transform=transform, pca_components=pc.components_, pca_mean=pc.mean_))), encoding="utf-8")
     print(json.dumps(clean_json(summary), indent=2), flush=True)
+    import sb_export_dashboard  # tidy CSVs for BI tools and the docs/ explorer
+    sb_export_dashboard.main()
 
 
 if __name__ == "__main__":

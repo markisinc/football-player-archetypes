@@ -1,6 +1,9 @@
-"""Flatten outputs/profiling_sb/profiles.json into tidy CSVs for dashboards (values rounded as displayed).
+"""Flatten outputs/profiling_sb/profiles.json into tidy CSVs (values rounded as displayed).
 
-Run: python src/sb_export_dashboard.py   -> outputs/profiling_sb/dashboard/*.csv
+Run: python src/sb_export_dashboard.py
+  -> outputs/profiling_sb/dashboard/*.csv  (for BI tools)
+  -> docs/data/*.csv                        (read by the GitHub Pages explorer)
+Also run automatically at the end of src/sb_profiling.py.
 """
 from pathlib import Path
 import json
@@ -10,10 +13,17 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "outputs" / "profiling_sb" / "profiles.json"
 OUT = ROOT / "outputs" / "profiling_sb" / "dashboard"
+SITE = ROOT / "docs" / "data"
+
+
+def save(df, name):
+    for folder in [OUT] + ([SITE] if SITE.parent.exists() else []):
+        folder.mkdir(parents=True, exist_ok=True)
+        df.to_csv(folder / name, index=False)
 
 
 def main():
-    OUT.mkdir(parents=True, exist_ok=True)
+    OUT.mkdir(parents=True, exist_ok=True)  # (save() also writes docs/data)
     d = json.loads(SRC.read_text(encoding="utf-8"))
     P = d["players"]; feats = [f["key"] for f in d["features"]]
     byid = {p["id"]: p for p in P}
@@ -39,7 +49,7 @@ def main():
         for i, v in enumerate(p["heatmap"]):
             r[f"h{i}"] = round(v or 0, 4)
         rows.append(r)
-    pd.DataFrame(rows).to_csv(OUT / "sb_players.csv", index=False)
+    save(pd.DataFrame(rows), "sb_players.csv")
 
     nb = []
     for p in P:
@@ -49,7 +59,7 @@ def main():
                            neighbour_teams=" / ".join(o["teams"]), neighbour_league=o["league"], neighbour_group=o["group"],
                            neighbour_archetype=o["subrole"], match_pct=max(0, round(100 * (1 - n["distance"] / typical))),
                            holds_up_pct=round(100 * n["stability"])))
-    pd.DataFrame(nb).to_csv(OUT / "sb_neighbours.csv", index=False)
+    save(pd.DataFrame(nb), "sb_neighbours.csv")
 
     arch, prof = [], []
     flab = {f["key"]: f["label"] for f in d["features"]}
@@ -60,9 +70,9 @@ def main():
                          top_features=",".join(s["top"]), low_features=",".join(s["low"])))
         for k in feats:
             prof.append(dict(archetype_id=s["id"], feature=k, label=flab[k], percentile_in_group=None if s["percentiles"].get(k) is None else round(s["percentiles"][k])))
-    pd.DataFrame(arch).to_csv(OUT / "sb_archetypes.csv", index=False)
-    pd.DataFrame(prof).to_csv(OUT / "sb_archetype_profiles.csv", index=False)
-    pd.DataFrame([dict(key=f["key"], label=f["label"], category=f["group"]) for f in d["features"]]).to_csv(OUT / "sb_features.csv", index=False)
+    save(pd.DataFrame(arch), "sb_archetypes.csv")
+    save(pd.DataFrame(prof), "sb_archetype_profiles.csv")
+    save(pd.DataFrame([dict(key=f["key"], label=f["label"], category=f["group"]) for f in d["features"]]), "sb_features.csv")
 
     s = d["summary"]
     summ = [("matches", s["matches"]), ("eligible_players", s["eligible"]), ("min_minutes", int(s["min_minutes"])),
@@ -73,7 +83,7 @@ def main():
             ("core_player_pct", round(100 * np.mean([p["subrole_stability"] >= 0.8 for p in P]))),
             ("typical_distance", round(typical, 3)), ("flagged_lineups", s["roster_issues"]), ("team_matches", s["team_matches"])]
     summ += [(f"ari_{g}", round(v, 2)) for g, v in s["subrole_ari"].items()]
-    pd.DataFrame(summ, columns=["metric", "value"]).to_csv(OUT / "sb_summary.csv", index=False)
+    save(pd.DataFrame(summ, columns=["metric", "value"]), "sb_summary.csv")
     for f in sorted(OUT.glob("*.csv")):
         print(f.name, f.stat().st_size)
 
