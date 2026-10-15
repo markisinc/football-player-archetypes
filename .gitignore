@@ -8,8 +8,8 @@ venv/
 Thumbs.db
 
 # --- Downloaded data & intermediate files (rebuilt by the pipeline) ----------
-data/
-work/
+/data/
+/work/
 outputs/profiling_sb/profiles.json      # published copy lives in docs/
 outputs/profiling_sb/dashboard/
 

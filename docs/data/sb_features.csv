@@ -1,0 +1,28 @@
+key,label,category
+passes90,Passes,Volume
+receptions90,Receptions,Volume
+carries90,Carries,Volume
+dribbles90,Take-ons attempted,Volume
+long_share,Long-pass share,Passing style
+forward_share,Forward-pass share,Passing style
+prog_passes90,Progressive passes,Passing style
+crosses90,Crosses (open play),Passing style
+shot_assists90,Passes leading to shots,Passing style
+prog_carries90,Progressive carries,Carrying
+avg_x,Average action depth,Location
+final_third,Final-third share,Location
+opp_box,Opponent-box share,Location
+own_box,Own-box share,Location
+width,Distance from centre,Location
+spread_y,Lateral spread,Location
+pressures90,Pressures (adj.),Defending
+tackles90,Tackles (adj.),Defending
+interceptions90,Interceptions (adj.),Defending
+recoveries90,Ball recoveries (adj.),Defending
+clearances90,Clearances (adj.),Defending
+blocks90,Blocks (adj.),Defending
+aerials90,Aerial duels,Defending
+def_height,Defensive action height,Defending
+fouls90,Fouls committed,Defending
+shots90,Shots,Attacking
+npxg_per_shot,Chance quality per shot,Attacking

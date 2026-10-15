@@ -1,0 +1,22 @@
+metric,value
+matches,1517.0
+eligible_players,1267.0
+min_minutes,900.0
+archetypes,21.0
+pca_dimensions,8.0
+pca_variance_pct,87.0
+map_variance_pct,60.0
+bootstraps,30.0
+top5_overlap_pct,37.0
+stable_link_pct,16.0
+same_league_pct,29.0
+same_league_chance_pct,25.0
+core_player_pct,56.0
+typical_distance,6.369
+flagged_lineups,34.0
+team_matches,3034.0
+ari_Centre-back,0.69
+ari_Full-back,0.46
+ari_Midfielder,0.6
+ari_Attacking mid / winger,0.5
+ari_Forward,0.39

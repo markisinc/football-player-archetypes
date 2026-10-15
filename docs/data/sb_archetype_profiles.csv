@@ -1,0 +1,568 @@
+archetype_id,feature,label,percentile_in_group
+0,passes90,Passes,80
+0,receptions90,Receptions,80
+0,carries90,Carries,80
+0,dribbles90,Take-ons attempted,58
+0,long_share,Long-pass share,36
+0,forward_share,Forward-pass share,38
+0,prog_passes90,Progressive passes,64
+0,crosses90,Crosses (open play),48
+0,shot_assists90,Passes leading to shots,55
+0,prog_carries90,Progressive carries,63
+0,avg_x,Average action depth,60
+0,final_third,Final-third share,38
+0,opp_box,Opponent-box share,40
+0,own_box,Own-box share,29
+0,width,Distance from centre,50
+0,spread_y,Lateral spread,41
+0,pressures90,Pressures (adj.),62
+0,tackles90,Tackles (adj.),65
+0,interceptions90,Interceptions (adj.),60
+0,recoveries90,Ball recoveries (adj.),75
+0,clearances90,Clearances (adj.),60
+0,blocks90,Blocks (adj.),63
+0,aerials90,Aerial duels,53
+0,def_height,Defensive action height,63
+0,fouls90,Fouls committed,51
+0,shots90,Shots,56
+0,npxg_per_shot,Chance quality per shot,49
+1,passes90,Passes,31
+1,receptions90,Receptions,32
+1,carries90,Carries,31
+1,dribbles90,Take-ons attempted,40
+1,long_share,Long-pass share,61
+1,forward_share,Forward-pass share,58
+1,prog_passes90,Progressive passes,40
+1,crosses90,Crosses (open play),44
+1,shot_assists90,Passes leading to shots,41
+1,prog_carries90,Progressive carries,38
+1,avg_x,Average action depth,36
+1,final_third,Final-third share,49
+1,opp_box,Opponent-box share,61
+1,own_box,Own-box share,68
+1,width,Distance from centre,41
+1,spread_y,Lateral spread,52
+1,pressures90,Pressures (adj.),38
+1,tackles90,Tackles (adj.),38
+1,interceptions90,Interceptions (adj.),45
+1,recoveries90,Ball recoveries (adj.),34
+1,clearances90,Clearances (adj.),51
+1,blocks90,Blocks (adj.),40
+1,aerials90,Aerial duels,54
+1,def_height,Defensive action height,36
+1,fouls90,Fouls committed,47
+1,shots90,Shots,50
+1,npxg_per_shot,Chance quality per shot,55
+2,passes90,Passes,65
+2,receptions90,Receptions,61
+2,carries90,Carries,63
+2,dribbles90,Take-ons attempted,80
+2,long_share,Long-pass share,37
+2,forward_share,Forward-pass share,42
+2,prog_passes90,Progressive passes,65
+2,crosses90,Crosses (open play),89
+2,shot_assists90,Passes leading to shots,80
+2,prog_carries90,Progressive carries,75
+2,avg_x,Average action depth,91
+2,final_third,Final-third share,89
+2,opp_box,Opponent-box share,28
+2,own_box,Own-box share,20
+2,width,Distance from centre,93
+2,spread_y,Lateral spread,68
+2,pressures90,Pressures (adj.),75
+2,tackles90,Tackles (adj.),71
+2,interceptions90,Interceptions (adj.),53
+2,recoveries90,Ball recoveries (adj.),64
+2,clearances90,Clearances (adj.),22
+2,blocks90,Blocks (adj.),64
+2,aerials90,Aerial duels,27
+2,def_height,Defensive action height,85
+2,fouls90,Fouls committed,63
+2,shots90,Shots,38
+2,npxg_per_shot,Chance quality per shot,32
+3,passes90,Passes,56
+3,receptions90,Receptions,49
+3,carries90,Carries,50
+3,dribbles90,Take-ons attempted,47
+3,long_share,Long-pass share,60
+3,forward_share,Forward-pass share,62
+3,prog_passes90,Progressive passes,63
+3,crosses90,Crosses (open play),58
+3,shot_assists90,Passes leading to shots,55
+3,prog_carries90,Progressive carries,46
+3,avg_x,Average action depth,48
+3,final_third,Final-third share,48
+3,opp_box,Opponent-box share,37
+3,own_box,Own-box share,52
+3,width,Distance from centre,64
+3,spread_y,Lateral spread,38
+3,pressures90,Pressures (adj.),44
+3,tackles90,Tackles (adj.),44
+3,interceptions90,Interceptions (adj.),48
+3,recoveries90,Ball recoveries (adj.),52
+3,clearances90,Clearances (adj.),52
+3,blocks90,Blocks (adj.),42
+3,aerials90,Aerial duels,45
+3,def_height,Defensive action height,44
+3,fouls90,Fouls committed,43
+3,shots90,Shots,43
+3,npxg_per_shot,Chance quality per shot,41
+4,passes90,Passes,39
+4,receptions90,Receptions,57
+4,carries90,Carries,55
+4,dribbles90,Take-ons attempted,73
+4,long_share,Long-pass share,46
+4,forward_share,Forward-pass share,33
+4,prog_passes90,Progressive passes,48
+4,crosses90,Crosses (open play),66
+4,shot_assists90,Passes leading to shots,65
+4,prog_carries90,Progressive carries,75
+4,avg_x,Average action depth,81
+4,final_third,Final-third share,80
+4,opp_box,Opponent-box share,77
+4,own_box,Own-box share,31
+4,width,Distance from centre,48
+4,spread_y,Lateral spread,54
+4,pressures90,Pressures (adj.),49
+4,tackles90,Tackles (adj.),41
+4,interceptions90,Interceptions (adj.),40
+4,recoveries90,Ball recoveries (adj.),57
+4,clearances90,Clearances (adj.),21
+4,blocks90,Blocks (adj.),45
+4,aerials90,Aerial duels,38
+4,def_height,Defensive action height,77
+4,fouls90,Fouls committed,48
+4,shots90,Shots,74
+4,npxg_per_shot,Chance quality per shot,60
+5,passes90,Passes,88
+5,receptions90,Receptions,89
+5,carries90,Carries,89
+5,dribbles90,Take-ons attempted,70
+5,long_share,Long-pass share,28
+5,forward_share,Forward-pass share,21
+5,prog_passes90,Progressive passes,75
+5,crosses90,Crosses (open play),80
+5,shot_assists90,Passes leading to shots,78
+5,prog_carries90,Progressive carries,77
+5,avg_x,Average action depth,74
+5,final_third,Final-third share,70
+5,opp_box,Opponent-box share,66
+5,own_box,Own-box share,16
+5,width,Distance from centre,61
+5,spread_y,Lateral spread,44
+5,pressures90,Pressures (adj.),72
+5,tackles90,Tackles (adj.),68
+5,interceptions90,Interceptions (adj.),65
+5,recoveries90,Ball recoveries (adj.),84
+5,clearances90,Clearances (adj.),49
+5,blocks90,Blocks (adj.),67
+5,aerials90,Aerial duels,50
+5,def_height,Defensive action height,79
+5,fouls90,Fouls committed,54
+5,shots90,Shots,67
+5,npxg_per_shot,Chance quality per shot,52
+6,passes90,Passes,21
+6,receptions90,Receptions,15
+6,carries90,Carries,15
+6,dribbles90,Take-ons attempted,26
+6,long_share,Long-pass share,68
+6,forward_share,Forward-pass share,74
+6,prog_passes90,Progressive passes,26
+6,crosses90,Crosses (open play),21
+6,shot_assists90,Passes leading to shots,25
+6,prog_carries90,Progressive carries,22
+6,avg_x,Average action depth,19
+6,final_third,Final-third share,25
+6,opp_box,Opponent-box share,28
+6,own_box,Own-box share,85
+6,width,Distance from centre,36
+6,spread_y,Lateral spread,61
+6,pressures90,Pressures (adj.),29
+6,tackles90,Tackles (adj.),40
+6,interceptions90,Interceptions (adj.),42
+6,recoveries90,Ball recoveries (adj.),20
+6,clearances90,Clearances (adj.),65
+6,blocks90,Blocks (adj.),41
+6,aerials90,Aerial duels,55
+6,def_height,Defensive action height,18
+6,fouls90,Fouls committed,52
+6,shots90,Shots,30
+6,npxg_per_shot,Chance quality per shot,42
+7,passes90,Passes,54
+7,receptions90,Receptions,51
+7,carries90,Carries,51
+7,dribbles90,Take-ons attempted,42
+7,long_share,Long-pass share,36
+7,forward_share,Forward-pass share,45
+7,prog_passes90,Progressive passes,37
+7,crosses90,Crosses (open play),26
+7,shot_assists90,Passes leading to shots,30
+7,prog_carries90,Progressive carries,39
+7,avg_x,Average action depth,34
+7,final_third,Final-third share,32
+7,opp_box,Opponent-box share,55
+7,own_box,Own-box share,59
+7,width,Distance from centre,36
+7,spread_y,Lateral spread,62
+7,pressures90,Pressures (adj.),70
+7,tackles90,Tackles (adj.),70
+7,interceptions90,Interceptions (adj.),62
+7,recoveries90,Ball recoveries (adj.),46
+7,clearances90,Clearances (adj.),64
+7,blocks90,Blocks (adj.),68
+7,aerials90,Aerial duels,68
+7,def_height,Defensive action height,42
+7,fouls90,Fouls committed,60
+7,shots90,Shots,44
+7,npxg_per_shot,Chance quality per shot,64
+8,passes90,Passes,78
+8,receptions90,Receptions,74
+8,carries90,Carries,79
+8,dribbles90,Take-ons attempted,57
+8,long_share,Long-pass share,41
+8,forward_share,Forward-pass share,38
+8,prog_passes90,Progressive passes,60
+8,crosses90,Crosses (open play),38
+8,shot_assists90,Passes leading to shots,45
+8,prog_carries90,Progressive carries,52
+8,avg_x,Average action depth,38
+8,final_third,Final-third share,33
+8,opp_box,Opponent-box share,31
+8,own_box,Own-box share,41
+8,width,Distance from centre,32
+8,spread_y,Lateral spread,35
+8,pressures90,Pressures (adj.),68
+8,tackles90,Tackles (adj.),72
+8,interceptions90,Interceptions (adj.),71
+8,recoveries90,Ball recoveries (adj.),78
+8,clearances90,Clearances (adj.),58
+8,blocks90,Blocks (adj.),65
+8,aerials90,Aerial duels,47
+8,def_height,Defensive action height,48
+8,fouls90,Fouls committed,50
+8,shots90,Shots,41
+8,npxg_per_shot,Chance quality per shot,40
+9,passes90,Passes,52
+9,receptions90,Receptions,54
+9,carries90,Carries,53
+9,dribbles90,Take-ons attempted,55
+9,long_share,Long-pass share,68
+9,forward_share,Forward-pass share,62
+9,prog_passes90,Progressive passes,64
+9,crosses90,Crosses (open play),72
+9,shot_assists90,Passes leading to shots,75
+9,prog_carries90,Progressive carries,60
+9,avg_x,Average action depth,66
+9,final_third,Final-third share,67
+9,opp_box,Opponent-box share,49
+9,own_box,Own-box share,37
+9,width,Distance from centre,64
+9,spread_y,Lateral spread,65
+9,pressures90,Pressures (adj.),36
+9,tackles90,Tackles (adj.),29
+9,interceptions90,Interceptions (adj.),37
+9,recoveries90,Ball recoveries (adj.),52
+9,clearances90,Clearances (adj.),30
+9,blocks90,Blocks (adj.),30
+9,aerials90,Aerial duels,34
+9,def_height,Defensive action height,63
+9,fouls90,Fouls committed,47
+9,shots90,Shots,66
+9,npxg_per_shot,Chance quality per shot,39
+10,passes90,Passes,38
+10,receptions90,Receptions,27
+10,carries90,Carries,32
+10,dribbles90,Take-ons attempted,31
+10,long_share,Long-pass share,61
+10,forward_share,Forward-pass share,63
+10,prog_passes90,Progressive passes,39
+10,crosses90,Crosses (open play),29
+10,shot_assists90,Passes leading to shots,27
+10,prog_carries90,Progressive carries,27
+10,avg_x,Average action depth,23
+10,final_third,Final-third share,26
+10,opp_box,Opponent-box share,39
+10,own_box,Own-box share,78
+10,width,Distance from centre,37
+10,spread_y,Lateral spread,45
+10,pressures90,Pressures (adj.),40
+10,tackles90,Tackles (adj.),54
+10,interceptions90,Interceptions (adj.),58
+10,recoveries90,Ball recoveries (adj.),36
+10,clearances90,Clearances (adj.),68
+10,blocks90,Blocks (adj.),51
+10,aerials90,Aerial duels,60
+10,def_height,Defensive action height,24
+10,fouls90,Fouls committed,56
+10,shots90,Shots,30
+10,npxg_per_shot,Chance quality per shot,46
+11,passes90,Passes,78
+11,receptions90,Receptions,87
+11,carries90,Carries,85
+11,dribbles90,Take-ons attempted,83
+11,long_share,Long-pass share,39
+11,forward_share,Forward-pass share,37
+11,prog_passes90,Progressive passes,80
+11,crosses90,Crosses (open play),79
+11,shot_assists90,Passes leading to shots,83
+11,prog_carries90,Progressive carries,86
+11,avg_x,Average action depth,85
+11,final_third,Final-third share,82
+11,opp_box,Opponent-box share,68
+11,own_box,Own-box share,12
+11,width,Distance from centre,71
+11,spread_y,Lateral spread,51
+11,pressures90,Pressures (adj.),66
+11,tackles90,Tackles (adj.),51
+11,interceptions90,Interceptions (adj.),30
+11,recoveries90,Ball recoveries (adj.),70
+11,clearances90,Clearances (adj.),23
+11,blocks90,Blocks (adj.),53
+11,aerials90,Aerial duels,27
+11,def_height,Defensive action height,86
+11,fouls90,Fouls committed,39
+11,shots90,Shots,75
+11,npxg_per_shot,Chance quality per shot,62
+12,passes90,Passes,19
+12,receptions90,Receptions,41
+12,carries90,Carries,26
+12,dribbles90,Take-ons attempted,55
+12,long_share,Long-pass share,27
+12,forward_share,Forward-pass share,33
+12,prog_passes90,Progressive passes,26
+12,crosses90,Crosses (open play),65
+12,shot_assists90,Passes leading to shots,55
+12,prog_carries90,Progressive carries,61
+12,avg_x,Average action depth,79
+12,final_third,Final-third share,82
+12,opp_box,Opponent-box share,87
+12,own_box,Own-box share,45
+12,width,Distance from centre,72
+12,spread_y,Lateral spread,65
+12,pressures90,Pressures (adj.),53
+12,tackles90,Tackles (adj.),38
+12,interceptions90,Interceptions (adj.),37
+12,recoveries90,Ball recoveries (adj.),30
+12,clearances90,Clearances (adj.),44
+12,blocks90,Blocks (adj.),51
+12,aerials90,Aerial duels,67
+12,def_height,Defensive action height,70
+12,fouls90,Fouls committed,49
+12,shots90,Shots,69
+12,npxg_per_shot,Chance quality per shot,75
+13,passes90,Passes,85
+13,receptions90,Receptions,82
+13,carries90,Carries,83
+13,dribbles90,Take-ons attempted,48
+13,long_share,Long-pass share,53
+13,forward_share,Forward-pass share,57
+13,prog_passes90,Progressive passes,75
+13,crosses90,Crosses (open play),43
+13,shot_assists90,Passes leading to shots,74
+13,prog_carries90,Progressive carries,51
+13,avg_x,Average action depth,41
+13,final_third,Final-third share,36
+13,opp_box,Opponent-box share,31
+13,own_box,Own-box share,34
+13,width,Distance from centre,33
+13,spread_y,Lateral spread,48
+13,pressures90,Pressures (adj.),55
+13,tackles90,Tackles (adj.),51
+13,interceptions90,Interceptions (adj.),47
+13,recoveries90,Ball recoveries (adj.),69
+13,clearances90,Clearances (adj.),40
+13,blocks90,Blocks (adj.),42
+13,aerials90,Aerial duels,34
+13,def_height,Defensive action height,55
+13,fouls90,Fouls committed,37
+13,shots90,Shots,52
+13,npxg_per_shot,Chance quality per shot,41
+14,passes90,Passes,53
+14,receptions90,Receptions,28
+14,carries90,Carries,40
+14,dribbles90,Take-ons attempted,36
+14,long_share,Long-pass share,64
+14,forward_share,Forward-pass share,73
+14,prog_passes90,Progressive passes,50
+14,crosses90,Crosses (open play),40
+14,shot_assists90,Passes leading to shots,39
+14,prog_carries90,Progressive carries,22
+14,avg_x,Average action depth,17
+14,final_third,Final-third share,22
+14,opp_box,Opponent-box share,29
+14,own_box,Own-box share,79
+14,width,Distance from centre,48
+14,spread_y,Lateral spread,46
+14,pressures90,Pressures (adj.),54
+14,tackles90,Tackles (adj.),65
+14,interceptions90,Interceptions (adj.),71
+14,recoveries90,Ball recoveries (adj.),48
+14,clearances90,Clearances (adj.),77
+14,blocks90,Blocks (adj.),66
+14,aerials90,Aerial duels,59
+14,def_height,Defensive action height,19
+14,fouls90,Fouls committed,62
+14,shots90,Shots,32
+14,npxg_per_shot,Chance quality per shot,43
+15,passes90,Passes,22
+15,receptions90,Receptions,42
+15,carries90,Carries,23
+15,dribbles90,Take-ons attempted,39
+15,long_share,Long-pass share,30
+15,forward_share,Forward-pass share,29
+15,prog_passes90,Progressive passes,21
+15,crosses90,Crosses (open play),40
+15,shot_assists90,Passes leading to shots,27
+15,prog_carries90,Progressive carries,47
+15,avg_x,Average action depth,67
+15,final_third,Final-third share,67
+15,opp_box,Opponent-box share,77
+15,own_box,Own-box share,52
+15,width,Distance from centre,46
+15,spread_y,Lateral spread,57
+15,pressures90,Pressures (adj.),44
+15,tackles90,Tackles (adj.),35
+15,interceptions90,Interceptions (adj.),34
+15,recoveries90,Ball recoveries (adj.),27
+15,clearances90,Clearances (adj.),48
+15,blocks90,Blocks (adj.),41
+15,aerials90,Aerial duels,65
+15,def_height,Defensive action height,65
+15,fouls90,Fouls committed,51
+15,shots90,Shots,53
+15,npxg_per_shot,Chance quality per shot,67
+16,passes90,Passes,45
+16,receptions90,Receptions,49
+16,carries90,Carries,56
+16,dribbles90,Take-ons attempted,73
+16,long_share,Long-pass share,55
+16,forward_share,Forward-pass share,46
+16,prog_passes90,Progressive passes,56
+16,crosses90,Crosses (open play),72
+16,shot_assists90,Passes leading to shots,61
+16,prog_carries90,Progressive carries,74
+16,avg_x,Average action depth,69
+16,final_third,Final-third share,69
+16,opp_box,Opponent-box share,59
+16,own_box,Own-box share,39
+16,width,Distance from centre,69
+16,spread_y,Lateral spread,49
+16,pressures90,Pressures (adj.),49
+16,tackles90,Tackles (adj.),52
+16,interceptions90,Interceptions (adj.),52
+16,recoveries90,Ball recoveries (adj.),58
+16,clearances90,Clearances (adj.),40
+16,blocks90,Blocks (adj.),52
+16,aerials90,Aerial duels,43
+16,def_height,Defensive action height,57
+16,fouls90,Fouls committed,50
+16,shots90,Shots,60
+16,npxg_per_shot,Chance quality per shot,48
+17,passes90,Passes,79
+17,receptions90,Receptions,65
+17,carries90,Carries,88
+17,dribbles90,Take-ons attempted,81
+17,long_share,Long-pass share,64
+17,forward_share,Forward-pass share,51
+17,prog_passes90,Progressive passes,78
+17,crosses90,Crosses (open play),79
+17,shot_assists90,Passes leading to shots,67
+17,prog_carries90,Progressive carries,82
+17,avg_x,Average action depth,35
+17,final_third,Final-third share,40
+17,opp_box,Opponent-box share,14
+17,own_box,Own-box share,29
+17,width,Distance from centre,80
+17,spread_y,Lateral spread,77
+17,pressures90,Pressures (adj.),68
+17,tackles90,Tackles (adj.),68
+17,interceptions90,Interceptions (adj.),63
+17,recoveries90,Ball recoveries (adj.),81
+17,clearances90,Clearances (adj.),32
+17,blocks90,Blocks (adj.),62
+17,aerials90,Aerial duels,26
+17,def_height,Defensive action height,34
+17,fouls90,Fouls committed,45
+17,shots90,Shots,47
+17,npxg_per_shot,Chance quality per shot,32
+18,passes90,Passes,53
+18,receptions90,Receptions,46
+18,carries90,Carries,49
+18,dribbles90,Take-ons attempted,49
+18,long_share,Long-pass share,47
+18,forward_share,Forward-pass share,49
+18,prog_passes90,Progressive passes,47
+18,crosses90,Crosses (open play),48
+18,shot_assists90,Passes leading to shots,45
+18,prog_carries90,Progressive carries,44
+18,avg_x,Average action depth,34
+18,final_third,Final-third share,37
+18,opp_box,Opponent-box share,40
+18,own_box,Own-box share,61
+18,width,Distance from centre,65
+18,spread_y,Lateral spread,66
+18,pressures90,Pressures (adj.),60
+18,tackles90,Tackles (adj.),65
+18,interceptions90,Interceptions (adj.),64
+18,recoveries90,Ball recoveries (adj.),54
+18,clearances90,Clearances (adj.),61
+18,blocks90,Blocks (adj.),61
+18,aerials90,Aerial duels,63
+18,def_height,Defensive action height,36
+18,fouls90,Fouls committed,60
+18,shots90,Shots,41
+18,npxg_per_shot,Chance quality per shot,51
+19,passes90,Passes,32
+19,receptions90,Receptions,45
+19,carries90,Carries,27
+19,dribbles90,Take-ons attempted,31
+19,long_share,Long-pass share,45
+19,forward_share,Forward-pass share,54
+19,prog_passes90,Progressive passes,31
+19,crosses90,Crosses (open play),31
+19,shot_assists90,Passes leading to shots,41
+19,prog_carries90,Progressive carries,30
+19,avg_x,Average action depth,59
+19,final_third,Final-third share,54
+19,opp_box,Opponent-box share,70
+19,own_box,Own-box share,60
+19,width,Distance from centre,25
+19,spread_y,Lateral spread,27
+19,pressures90,Pressures (adj.),40
+19,tackles90,Tackles (adj.),33
+19,interceptions90,Interceptions (adj.),33
+19,recoveries90,Ball recoveries (adj.),28
+19,clearances90,Clearances (adj.),58
+19,blocks90,Blocks (adj.),42
+19,aerials90,Aerial duels,60
+19,def_height,Defensive action height,58
+19,fouls90,Fouls committed,55
+19,shots90,Shots,51
+19,npxg_per_shot,Chance quality per shot,55
+20,passes90,Passes,59
+20,receptions90,Receptions,57
+20,carries90,Carries,69
+20,dribbles90,Take-ons attempted,65
+20,long_share,Long-pass share,56
+20,forward_share,Forward-pass share,44
+20,prog_passes90,Progressive passes,73
+20,crosses90,Crosses (open play),71
+20,shot_assists90,Passes leading to shots,67
+20,prog_carries90,Progressive carries,78
+20,avg_x,Average action depth,82
+20,final_third,Final-third share,82
+20,opp_box,Opponent-box share,65
+20,own_box,Own-box share,26
+20,width,Distance from centre,45
+20,spread_y,Lateral spread,44
+20,pressures90,Pressures (adj.),33
+20,tackles90,Tackles (adj.),39
+20,interceptions90,Interceptions (adj.),48
+20,recoveries90,Ball recoveries (adj.),62
+20,clearances90,Clearances (adj.),29
+20,blocks90,Blocks (adj.),35
+20,aerials90,Aerial duels,24
+20,def_height,Defensive action height,82
+20,fouls90,Fouls committed,25
+20,shots90,Shots,72
+20,npxg_per_shot,Chance quality per shot,59
