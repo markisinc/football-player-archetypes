@@ -138,15 +138,29 @@ window.dash = (() => {
 .ep .pill { align-self: flex-start; font-size: var(--cds-font-size-body); font-weight: 600; border-radius: 6px; padding: 3px 10px; background: color-mix(in srgb, var(--color-fg) 8%, transparent); }
 .ep .facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: var(--cds-font-size-body); margin: 4px 0 0; }
 .ep .facts dt { color: var(--color-fg-muted); } .ep .facts dd { margin: 0; font-variant-numeric: tabular-nums; min-width: 0; }
-/* comparison: radar | two pitches | explanation */
-.ep .cmp-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr) minmax(0, 1fr); gap: var(--cds-gap-lg); align-items: start; }
-@media (max-width: 1000px) { .ep .cmp-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .ep .cmp-grid .why { grid-column: 1 / -1; } }
-@media (max-width: 640px) { .ep .cmp-grid { grid-template-columns: minmax(0, 1fr); } }
-.ep .pitches { display: grid; gap: var(--cds-gap-sm); }
-.ep .pitch-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); display: flex; align-items: center; gap: 6px; }
-.ep .pitches .chart { min-height: 0; }
-.ep .why { display: grid; gap: var(--cds-gap-md); font-size: var(--cds-font-size-body); align-content: start; }
+/* selected-player banner: identity | facts */
+.ep .banner { display: grid; grid-template-columns: minmax(0, 17rem) minmax(0, 1fr); gap: var(--cds-gap-lg); align-items: center; }
+@media (max-width: 760px) { .ep .banner { grid-template-columns: minmax(0, 1fr); } }
+.ep .ident { display: flex; flex-direction: column; gap: 6px; padding-right: var(--cds-pad-lg); border-right: 1px solid var(--color-border-line); }
+@media (max-width: 760px) { .ep .ident { border-right: 0; padding-right: 0; } }
+.ep .bfacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--cds-gap-md) var(--cds-gap-lg); }
+.ep .bfact { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ep .bfact .k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.ep .bfact .v { font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+.ep .bfact .v b { font-weight: 600; }
+/* comparison: radar + two pitches in one row, then alike | differ */
+.ep .cmp-head { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); align-items: center; justify-content: space-between; }
+.ep .cmp-pick { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-sm); }
+.ep .cmp-pick select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 6px 10px; max-width: 100%; }
+.ep .cmp-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(0, 1fr); gap: var(--cds-gap-lg); align-items: center; }
+@media (max-width: 1000px) { .ep .cmp-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .ep .cmp-grid .radar-cell { grid-column: 1 / -1; max-width: 30rem; justify-self: center; width: 100%; } }
+@media (max-width: 560px) { .ep .cmp-grid { grid-template-columns: minmax(0, 1fr); } }
+.ep .pitch-cell { display: flex; flex-direction: column; gap: 6px; }
+.ep .pitch-label { font-size: var(--cds-font-size-body); display: flex; align-items: center; gap: 2px; }
+.ep .pitch-cell .chart { min-height: 0; }
+.ep .why { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); gap: var(--cds-gap-md) var(--cds-gap-lg); font-size: var(--cds-font-size-body); padding-top: var(--cds-pad-md); border-top: 1px solid var(--color-border-line); }
 .ep .why ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+.ep .cmp-foot { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); align-items: center; justify-content: space-between; }
 /* archetypes */
 .ep .pbar { display: grid; grid-template-columns: minmax(0, 1fr) minmax(5rem, 40%) 2rem; gap: 10px; align-items: center; font-size: var(--cds-font-size-body); }
 .ep .pbar .track { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--color-fg) 8%, transparent); position: relative; }
@@ -190,32 +204,33 @@ window.dash = (() => {
     <button class="chip" id="sb-samegroup" aria-pressed="false">Same position group</button>
   </div>
 
+  <div class="card banner" id="sb-card" aria-label="Selected player"></div>
+
   <div class="card" id="sb-cmp">
-    <div class="controls" style="justify-content:space-between"><h2 id="sb-cmp-title">Comparison</h2><div class="legend" id="sb-cmp-legend"></div></div>
-    <div class="cmp-grid">
-      <div class="chart" id="sb-radar" data-source="sb_players sb_features"></div>
-      <div class="pitches" id="sb-pitches" data-source="sb_players">
-        <p class="muted">Where they act: share of on-ball actions by zone, attacking left to right.</p>
-        <div><div class="pitch-label" id="sb-pa-label"></div><div class="chart" id="sb-pa"></div></div>
-        <div><div class="pitch-label" id="sb-pb-label"></div><div class="chart" id="sb-pb"></div></div>
-      </div>
-      <div class="why" id="sb-why"></div>
+    <div class="cmp-head">
+      <div class="cmp-pick"><h2 id="sb-cmp-title">Compare with</h2><select id="sb-cmp-select" aria-label="Player to compare with"></select></div>
+      <div class="legend" id="sb-cmp-legend"></div>
     </div>
+    <div class="cmp-grid">
+      <div class="chart radar-cell" id="sb-radar" data-source="sb_players sb_features"></div>
+      <div class="pitch-cell"><div class="pitch-label" id="sb-pa-label"></div><div class="chart" id="sb-pa" data-source="sb_players"></div></div>
+      <div class="pitch-cell"><div class="pitch-label" id="sb-pb-label"></div><div class="chart" id="sb-pb" data-source="sb_players"></div></div>
+    </div>
+    <p class="muted" style="margin-top:-4px">Radar: percentile among all eligible outfield players. Pitches: share of each player's on-ball actions by zone, attacking left to right.</p>
+    <div class="why" id="sb-why"></div>
+    <div class="cmp-foot"><p class="muted">Defensive counts are adjusted for team possession.</p><button class="chip" id="sb-open">Open profile</button></div>
   </div>
 
-  <div class="row2">
-    <div class="card" id="sb-card"></div>
-    <div class="card" id="sb-nb-card">
-      <h2>Most similar styles</h2>
-      <p class="muted"><b>Match %</b>: 100 = identical profile, 0 = as different as two random players. <b>Holds up %</b>: how often the player stays in the top 5 when the season's matches are resampled (green ≥ 60, amber 30–59, grey &lt; 30). Click a row to compare.</p>
-      <div class="tbl-wrap">
-        <table id="sb-nb" data-source="sb_neighbours" data-row-key="player_id,rank">
-          <thead><tr><th data-field="rank">#</th><th class="txt" data-field="neighbour">Player</th><th class="txt hide-narrow" data-field="neighbour_team">Team</th><th class="txt hide-narrow" data-field="neighbour_archetype">Archetype</th><th data-field="match_pct">Match %</th><th data-field="holds_up_pct">Holds up %</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <p class="muted" id="sb-nb-note"></p>
+  <div class="card" id="sb-nb-card">
+    <h2>Most similar styles</h2>
+    <p class="muted"><b>Match %</b>: 100 = identical profile, 0 = as different as two random players. <b>Holds up %</b>: how often the player stays in the top 5 when the season's matches are resampled (green ≥ 60, amber 30–59, grey &lt; 30). Click a row to compare.</p>
+    <div class="tbl-wrap">
+      <table id="sb-nb" data-source="sb_neighbours" data-row-key="player_id,rank">
+        <thead><tr><th data-field="rank">#</th><th class="txt" data-field="neighbour">Player</th><th class="txt hide-narrow" data-field="neighbour_team">Team</th><th class="txt hide-narrow" data-field="neighbour_league">League</th><th class="txt hide-narrow" data-field="neighbour_archetype">Archetype</th><th data-field="match_pct">Match %</th><th data-field="holds_up_pct">Holds up %</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
+    <p class="muted" id="sb-nb-note"></p>
   </div>
 
   <div class="card" id="sb-trust">
@@ -352,6 +367,8 @@ window.dash = (() => {
     $('sb-exteam').addEventListener('click', () => { P.cmp = null; dash.setParams({ sb_exteam: !SB().exTeam }); });
     $('sb-samegroup').addEventListener('click', () => { P.cmp = null; dash.setParams({ sb_samegroup: !SB().sameGroup }); });
     $('sb-nb').addEventListener('click', (e) => { const tr = e.target.closest('tr[data-nid]'); if (tr) { P.cmp = Number(tr.dataset.nid); drawStyles(); } });
+    $('sb-cmp-select').addEventListener('change', (e) => { P.cmp = Number(e.target.value); drawStyles(); });
+    $('sb-open').addEventListener('click', () => { const id = P.cmp; if (id) { P.cmp = null; dash.setParams({ player: id }); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
   }
   const stabColor = (v) => v >= 60 ? 'var(--color-ok)' : v >= 30 ? 'var(--color-warn)' : 'var(--color-fg-muted)';
   function drawStyles() {
@@ -367,7 +384,7 @@ window.dash = (() => {
     const all = P.nb ? (P.nb.get(p.id) || []) : null;
     if (!all) {
       tb.replaceChildren();
-      if (BAD.includes(dash.data('sb_neighbours').status)) { const tr = mk('tr'); const c = mk('td', 'muted', 'Failed to load'); c.colSpan = 6; tr.append(c); tb.append(tr); }
+      if (BAD.includes(dash.data('sb_neighbours').status)) { const tr = mk('tr'); const c = mk('td', 'muted', 'Failed to load'); c.colSpan = 7; tr.append(c); tb.append(tr); }
       else wrap.classList.add('dash-skeleton');
       $('sb-cmp').hidden = true; return;
     }
@@ -381,32 +398,38 @@ window.dash = (() => {
       tr.dataset.key = encodeURIComponent(n.player_id) + ',' + encodeURIComponent(n.rank); tr.dataset.nid = n.neighbour_id; tr.tabIndex = 0;
       tr.addEventListener('keydown', (e) => { if (e.key === 'Enter') { P.cmp = n.neighbour_id; drawStyles(); } });
       const td = (t, cls) => { const c = mk('td', cls, t); tr.appendChild(c); return c; };
-      td(String(n.rank)); td(n.neighbour, 'txt'); td(n.neighbour_team, 'txt hide-narrow'); td(n.neighbour_archetype, 'txt hide-narrow wrap');
+      td(String(n.rank)); td(n.neighbour, 'txt'); td(n.neighbour_team, 'txt hide-narrow'); td(n.neighbour_league, 'txt hide-narrow'); td(n.neighbour_archetype, 'txt hide-narrow wrap');
       td(String(n.match_pct));
       const h = td(''); const d = mk('span', 'dot'); d.style.background = stabColor(n.holds_up_pct); h.append(d, document.createTextNode(String(n.holds_up_pct)));
       return tr;
     }));
-    if (!list.length) { const tr = mk('tr'); const c = mk('td', 'muted', 'No player among the 25 nearest matches these filters. Loosen a filter.'); c.colSpan = 6; tr.appendChild(c); tb.replaceChildren(tr); }
+    if (!list.length) { const tr = mk('tr'); const c = mk('td', 'muted', 'No player among the 25 nearest matches these filters. Loosen a filter.'); c.colSpan = 7; tr.appendChild(c); tb.replaceChildren(tr); }
     $('sb-nb-note').textContent = list.length && list.length < 10 ? `Only ${list.length} of the 25 nearest pass these filters.` : '';
+    const csel = $('sb-cmp-select');
+    csel.replaceChildren(...list.map((n) => new Option(`${n.rank}. ${n.neighbour} · ${n.match_pct}% match`, n.neighbour_id)));
+    if (P.cmp) csel.value = String(P.cmp);
     drawCompare(p, P.byId.get(P.cmp));
   }
   function drawCard(p) {
     const card = $('sb-card'); card.classList.remove('dash-skeleton');
     const w = 'id=' + p.id;
     const val = (field, text, tag = 'b') => { const b = mk(tag, null, text); b.setAttribute('data-source', 'sb_players'); b.setAttribute('data-field', field); b.setAttribute('data-where', w); return b; };
-    const dl = mk('dl', 'facts');
-    const add = (k, ...nodes) => { const dd = mk('dd'); nodes.forEach((n) => dd.append(n)); dl.append(mk('dt', null, k), dd); };
-    add('Team', val('teams', p.teams)); add('League', val('league', p.league)); add('Main position', val('position', p.position));
-    add('Minutes', val('minutes', comma(p.minutes)));
-    add('Archetype kept', val('archetype_stability', String(p.archetype_stability)), '% of resamples');
-    if (p.team_possession != null) add('Team possession', val('team_possession', String(p.team_possession)), '%');
-    add('Output', val('goals', String(p.goals)), ' goals · ', val('npxg90', fmt2(p.npxg90)), ' npxG/90');
-    if (p.pass_pct != null) add('Pass completion', val('pass_pct', String(p.pass_pct)), '%');
+    const ident = mk('div', 'ident');
+    const grp = val('group', p.group, 'span'); grp.className = 'muted';
     const name = mk('div', 'pname'); name.append(val('name', p.name, 'span'));
     const arch = val('archetype', p.archetype, 'span'); arch.className = 'pill';
-    const grp = val('group', p.group, 'span'); grp.className = 'muted';
-    card.replaceChildren(grp, name, arch, dl,
-      mk('p', 'muted', 'Output and completion are context only, not used for similarity.' + (/true/i.test(String(p.lineup_flag)) ? ' One of this player\'s lineups had a StatsBomb inconsistency.' : '')));
+    const top = mk('span', 'muted', 'Selected player · '); top.append(grp);
+    ident.append(top, name, arch);
+    const facts = mk('div', 'bfacts');
+    const fact = (k, ...nodes) => { const f = mk('div', 'bfact'); const v = mk('span', 'v'); nodes.forEach((n) => v.append(n)); f.append(mk('span', 'k', k), v); facts.append(f); };
+    fact('Team', val('teams', p.teams)); fact('League', val('league', p.league)); fact('Main position', val('position', p.position));
+    fact('Minutes', val('minutes', comma(p.minutes)));
+    fact('Archetype kept', val('archetype_stability', String(p.archetype_stability)), '% of resamples');
+    if (p.team_possession != null) fact('Team possession', val('team_possession', String(p.team_possession)), '%');
+    fact('Output (context)', val('goals', String(p.goals)), p.goals === 1 ? ' goal · ' : ' goals · ', val('npxg90', fmt2(p.npxg90)), ' npxG/90');
+    if (p.pass_pct != null) fact('Pass completion (context)', val('pass_pct', String(p.pass_pct)), '%');
+    card.replaceChildren(ident, facts);
+    card.title = /true/i.test(String(p.lineup_flag)) ? 'One of this player\'s lineups had a StatsBomb inconsistency.' : '';
   }
   function drawPitch(host, p, color) {
     host.replaceChildren();
@@ -440,12 +463,12 @@ window.dash = (() => {
     if (!ready('sb_features')) { state($('sb-radar'), 'sb_features'); return; }
     const feats = dash.data('sb_features').data; const lab = Object.fromEntries(feats.map((f) => [f.key, f.label]));
     const cA = dash.colors[0], cB = dash.colors[1];
-    $('sb-cmp-title').textContent = `${a.name} vs ${b.name}`;
+    $('sb-open').textContent = `Open ${b.name}'s profile`;
     $('sb-cmp-legend').replaceChildren(swatch(cA, a.name), swatch(cB, b.name));
     const host = $('sb-radar'); host.classList.remove('dash-skeleton'); host.replaceChildren();
     const keys = ['passes90', 'prog_passes90', 'prog_carries90', 'dribbles90', 'shots90', 'pressures90', 'tackles90', 'aerials90'];
     const SH = { passes90: 'Passes', prog_passes90: 'Prog. passes', prog_carries90: 'Prog. carries', dribbles90: 'Take-ons', shots90: 'Shots', pressures90: 'Pressures', tackles90: 'Tackles', aerials90: 'Aerials' };
-    const W = 400, H = 300, cx = W / 2, cy = H / 2 + 2, R = 102, n = keys.length;
+    const W = 400, H = 270, cx = W / 2, cy = H / 2 + 2, R = 96, n = keys.length;
     const svg = d3.select(host).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', `Radar of ${a.name} and ${b.name}`);
     const ang = (i) => -Math.PI / 2 + i / n * 2 * Math.PI;
     [25, 50, 75, 100].forEach((r) => svg.append('polygon').attr('points', keys.map((_, i) => [cx + Math.cos(ang(i)) * R * r / 100, cy + Math.sin(ang(i)) * R * r / 100].join(',')).join(' ')).attr('fill', 'none').attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', r === 50 ? 1.5 : 1));
@@ -463,8 +486,7 @@ window.dash = (() => {
         .on('pointerenter', () => { tipLine(tip, lab[keys[i]], [[col, p.name, 'percentile ' + p['p_' + keys[i]]]]); placeTip(tip, host, x * host.clientWidth / W, y * host.clientWidth / W); })
         .on('pointerleave', () => { tip.hidden = true; }));
     });
-    $('sb-pitches').classList.remove('dash-skeleton');
-    const lbl = (el, p, c) => { const d = mk('span', 'dot'); d.style.background = c; el.replaceChildren(d, document.createTextNode(p.name)); };
+    const lbl = (el, p, c) => { const d = mk('span', 'dot'); d.style.background = c; el.replaceChildren(d, mk('b', null, p.name), mk('span', 'muted', '\u00a0· where they act')); };
     lbl($('sb-pa-label'), a, cA); lbl($('sb-pb-label'), b, cB);
     drawPitch($('sb-pa'), a, cA); drawPitch($('sb-pb'), b, cB);
     const ks = feats.map((f) => f.key).filter((k) => a['p_' + k] != null && b['p_' + k] != null);
@@ -481,9 +503,7 @@ window.dash = (() => {
     const diff = mk('div'); diff.append(mk('h3', null, 'Differ most'));
     const ul2 = mk('ul'); apart.forEach((x) => ul2.append(li([`${x.b > x.a ? b.name : a.name} has more ${lab[x.k].toLowerCase()} (`, v(a, x.k), ' vs ', v(b, x.k), ')'])));
     diff.append(ul2);
-    const open = mk('button', 'chip', `Open ${b.name}`); open.style.justifySelf = 'start';
-    open.addEventListener('click', () => { P.cmp = null; dash.setParams({ player: b.id }); });
-    $('sb-why').replaceChildren(alike, diff, mk('p', 'muted', 'Percentiles among all eligible outfield players; defensive counts adjusted for team possession.'), open);
+    $('sb-why').replaceChildren(alike, diff);
   }
 
   // ================= ARCHETYPES =================
